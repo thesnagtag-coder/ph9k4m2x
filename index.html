@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Pre-Home Inspection | The Snag Tag</title>
+<style>
+:root{
+  --ink:#1c2530;
+  --ink-soft:#4a5568;
+  --paper:#fdfbf6;
+  --paper-alt:#f6f2e9;
+  --panel:#ffffff;
+  --line:#e4ddcc;
+  --line-strong:#d3c9ae;
+  --accent:#b5551f;
+  --accent-soft:#f1e2d3;
+  --brass:#8a6d3b;
+  --critical:#a3241e;
+  --critical-bg:#fbe9e8;
+  --high:#b5551f;
+  --high-bg:#fbeee4;
+  --medium:#8a6d1f;
+  --medium-bg:#faf3df;
+  --low:#3f6b4a;
+  --low-bg:#e9f2ea;
+  --good:#3f6b4a;
+  --good-bg:#e9f2ea;
+  --radius:10px;
+  --shadow:0 1px 2px rgba(28,37,48,.06), 0 4px 14px rgba(28,37,48,.05);
+  --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, Helvetica, Arial, sans-serif;
+  --mono: 'SF Mono', 'Cascadia Mono', Consolas, 'Roboto Mono', 'Courier New', monospace;
+}
+[data-theme="dark"]{
+  --ink:#eee7d8;
+  --ink-soft:#b9b2a1;
+  --paper:#181510;
+  --paper-alt:#1f1b14;
+  --panel:#211d16;
+  --line:#3a3325;
+  --line-strong:#4a4130;
+  --accent:#e0895a;
+  --accent-soft:#3a2a1c;
+  --critical-bg:#3a1f1d;
+  --high-bg:#3a2a1c;
+  --medium-bg:#382f18;
+  --low-bg:#1e2e22;
+  --good-bg:#1e2e22;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:34px 34px;
+  opacity:.35;
+  z-index:0;
+}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:600; margin:0 0 .4em; color:var(--ink);}
+a{color:inherit;}
+button{font-family:inherit;}
+.mono{font-family:var(--mono);}
+
+/* ---------- App shell ---------- */
+#app{position:relative; z-index:1; display:flex; min-height:100vh;}
+
+.sidebar{
+  width:250px; flex-shrink:0;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.menu-toggle{
+  display:none; border:1px solid var(--line-strong); background:var(--panel); color:var(--ink);
+  width:34px; height:34px; border-radius:8px; align-items:center; justify-content:center;
+  cursor:pointer; font-size:16px; flex-shrink:0;
+}
+.sidebar-backdrop{display:none; position:fixed; inset:0; background:rgba(20,16,10,.4); z-index:55;}
+.sidebar-backdrop.show{display:block;}
+@media (max-width:860px){
+  .menu-toggle{display:inline-flex;}
+  .sidebar{
+    position:fixed; top:0; left:0; z-index:60; height:100vh;
+    transform:translateX(-100%); transition:transform .22s ease;
+    box-shadow:0 0 30px rgba(20,16,10,.25);
+  }
+  .sidebar.open{transform:translateX(0);}
+}
+.sidebar-brand{
+  padding:20px 18px 14px;
+  border-bottom:1px solid var(--line);
+}
+.sidebar-brand .mark{
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent); font-weight:700;
+}
+.sidebar-brand h1{font-size:19px; margin-top:4px;}
+.sidebar-brand .sub{font-size:11.5px; color:var(--ink-soft); font-family:var(--mono);}
+
+.property-picker{padding:12px 14px; border-bottom:1px solid var(--line);}
+.property-picker select{
+  width:100%; padding:8px 9px; border-radius:8px; border:1px solid var(--line-strong);
+  background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:13px;
+}
+.property-picker .add-property{
+  margin-top:8px; width:100%; padding:7px 9px; border-radius:8px; border:1px dashed var(--line-strong);
+  background:transparent; color:var(--ink-soft); font-size:12.5px; cursor:pointer;
+}
+.property-picker .add-property:hover{border-color:var(--accent); color:var(--accent);}
+
+nav.sections{padding:10px 10px 20px; flex:1;}
+nav.sections .group-label{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-soft); padding:14px 8px 6px;
+}
+.nav-item{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:9px 10px; border-radius:8px; cursor:pointer; margin-bottom:2px;
+  font-size:13.5px; color:var(--ink-soft);
+}
+.nav-item:hover{background:var(--paper-alt); color:var(--ink);}
+.nav-item.active{background:var(--accent-soft); color:var(--accent); font-weight:600;}
+.nav-item .label{display:flex; align-items:center; gap:8px; min-width:0;}
+.nav-item .label span.txt{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.nav-item .dot{width:7px;height:7px;border-radius:50%; background:var(--line-strong); flex-shrink:0;}
+.nav-item.done .dot{background:var(--good);}
+.nav-item.inprogress .dot{background:var(--medium);}
+.nav-item .count{font-family:var(--mono); font-size:10.5px; color:var(--ink-soft); flex-shrink:0;}
+.nav-item.locked{opacity:.4; cursor:default;}
+.nav-item.locked:hover{background:transparent; color:var(--ink-soft);}
+
+.sidebar-foot{
+  padding:12px 14px; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:8px;
+}
+.theme-toggle{
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:12px; color:var(--ink-soft);
+}
+.theme-toggle button{
+  border:1px solid var(--line-strong); background:var(--paper); border-radius:20px;
+  padding:5px 10px; cursor:pointer; font-size:11.5px; color:var(--ink);
+}
+.build-tag{font-family:var(--mono); font-size:10px; color:var(--ink-soft); opacity:.7;}
+
+.main{flex:1; min-width:0; position:relative; z-index:1; padding-right:60px; transition:padding-right .18s ease;}
+body.dash-expanded .main{padding-right:372px;}
+@media (max-width:900px){ .main{padding-right:0;} body.dash-expanded .main{padding-right:0;} .dash-float{left:16px;} }
+.topbar{
+  position:sticky; top:0; z-index:5;
+  background:rgba(253,251,246,.92); backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+  padding:14px 26px; display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+[data-theme="dark"] .topbar{background:rgba(24,21,16,.92);}
+.topbar .crumb{font-family:var(--mono); font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em;}
+.topbar h2{font-size:20px; margin:2px 0 0;}
+.topbar .actions{display:flex; gap:8px;}
+.btn{
+  border:1px solid var(--line-strong); background:var(--panel); color:var(--ink);
+  padding:8px 14px; border-radius:8px; font-size:13px; cursor:pointer; font-weight:600;
+}
+.btn:hover{border-color:var(--accent); color:var(--accent);}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+.btn.primary:hover{opacity:.92; color:#fff;}
+.btn.ghost{border-color:transparent; background:transparent;}
+.btn.small{padding:6px 10px; font-size:12px;}
+
+.view{padding:24px 26px 60px; max-width:1080px;}
+.view.wide{max-width:1240px;}
+[hidden]{display:none !important;}
+
+/* ---------- Cards / panels ---------- */
+.panel{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:20px;
+}
+.panel + .panel{margin-top:16px;}
+
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:12px; margin-bottom:18px;}
+.stat-tile{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 16px; box-shadow:var(--shadow);
+}
+.stat-tile .num{font-family:var(--serif); font-size:28px; line-height:1; color:var(--ink);}
+.stat-tile .lbl{font-size:11.5px; color:var(--ink-soft); margin-top:6px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.05em;}
+.stat-tile.critical .num{color:var(--critical);}
+.stat-tile.high .num{color:var(--high);}
+.stat-tile.medium .num{color:var(--medium);}
+.stat-tile.low .num{color:var(--low);}
+.stat-tile.good .num{color:var(--good);}
+
+.progress-track{height:8px; background:var(--paper-alt); border-radius:6px; overflow:hidden; border:1px solid var(--line);}
+.progress-fill{height:100%; background:var(--accent); border-radius:6px; transition:width .3s;}
+
+/* ---------- Badges ---------- */
+.badge{
+  display:inline-flex; align-items:center; gap:5px; font-family:var(--mono); font-size:10.5px;
+  text-transform:uppercase; letter-spacing:.05em; padding:4px 9px; border-radius:20px; font-weight:700;
+}
+.badge.critical{background:var(--critical-bg); color:var(--critical);}
+.badge.high{background:var(--high-bg); color:var(--high);}
+.badge.medium{background:var(--medium-bg); color:var(--medium);}
+.badge.low{background:var(--low-bg); color:var(--low);}
+.badge.good{background:var(--good-bg); color:var(--good);}
+.badge.neutral{background:var(--paper-alt); color:var(--ink-soft);}
+
+/* ---------- Welcome / Blind Spot Check ---------- */
+.hero{
+  text-align:center; padding:34px 20px 10px; max-width:680px; margin:0 auto;
+}
+.hero .mark{font-family:var(--mono); font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:700;}
+.hero h1{font-size:32px; margin:10px 0 12px;}
+.hero p{color:var(--ink-soft); font-size:15px;}
+
+.check-stage{max-width:620px; margin:18px auto 0;}
+.check-progress-row{display:flex; align-items:center; gap:10px; margin-bottom:14px; font-family:var(--mono); font-size:11.5px; color:var(--ink-soft); flex-wrap:wrap;}
+.check-progress-row .progress-track{flex:1;}
+
+.bs-card{
+  background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+  padding:26px 26px 22px;
+}
+.bs-card .num-tag{font-family:var(--mono); font-size:11px; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:.08em;}
+.bs-card h3{font-size:20px; margin:8px 0 10px;}
+.bs-card .look-for{color:var(--ink-soft); font-size:14px; margin-bottom:16px;}
+.bs-options{display:flex; flex-direction:column; gap:8px;}
+.bs-opt{
+  text-align:left; padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong);
+  background:var(--paper); cursor:pointer; font-size:14px; color:var(--ink);
+}
+.bs-opt:hover{border-color:var(--accent); background:var(--accent-soft);}
+
+.bs-feedback{margin-top:16px; padding:16px 18px; border-radius:10px; border:1px solid var(--line);}
+.bs-feedback.found{background:var(--high-bg); border-color:var(--high);}
+.bs-feedback.clear{background:var(--good-bg); border-color:var(--good);}
+.bs-feedback .ft{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;}
+.bs-feedback.found .ft{color:var(--high);}
+.bs-feedback.clear .ft{color:var(--good);}
+.bs-feedback .snagspot{
+  margin-top:10px; padding-top:10px; border-top:1px dashed var(--line-strong);
+  font-size:13px; color:var(--ink-soft);
+}
+.bs-feedback .snagspot b{color:var(--accent); font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;}
+
+.bs-result{text-align:center; padding:10px 0 30px;}
+.bs-result .big-num{font-family:var(--serif); font-size:54px; color:var(--accent); line-height:1;}
+.bs-result .big-lbl{font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin-top:6px;}
+.bs-result p{max-width:480px; margin:16px auto; color:var(--ink-soft); font-size:14.5px;}
+
+.snagspot-box{
+  margin-top:12px; padding:12px 14px; border-radius:8px; background:var(--accent-soft);
+  border-left:3px solid var(--accent); font-size:13px; color:var(--ink);
+}
+.snagspot-box b{color:var(--accent); font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:3px;}
+
+/* ---------- Section / check cards ---------- */
+.section-head{margin-bottom:16px;}
+.section-head .intro{color:var(--ink-soft); font-size:14px; max-width:70ch;}
+
+.check-card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:18px 20px; margin-bottom:14px;
+}
+.check-card .ch-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.check-card h4{font-size:16.5px; margin-bottom:2px;}
+.check-card .req{color:var(--ink-soft); font-size:13.5px; margin-bottom:10px;}
+.ch-badges{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+
+.ch-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px;}
+@media (max-width:720px){.ch-grid{grid-template-columns:1fr;}}
+.ch-block .lbl{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:5px;}
+.ch-block ul{margin:0; padding-left:18px; font-size:13.5px;}
+.ch-block ul li{margin-bottom:3px;}
+.ch-measure{font-family:var(--mono); font-size:13px; background:var(--paper-alt); padding:6px 10px; border-radius:6px; display:inline-block; margin-top:2px;}
+
+.ch-fields{margin-top:14px; padding-top:14px; border-top:1px dashed var(--line-strong);}
+.ch-row{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:10px;}
+@media (max-width:720px){.ch-row{grid-template-columns:1fr;}}
+.field label{display:block; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin-bottom:4px;}
+.field select, .field input[type=text], .field textarea{
+  width:100%; padding:8px 9px; border-radius:7px; border:1px solid var(--line-strong);
+  background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:13.5px;
+}
+.field textarea{min-height:64px; resize:vertical;}
+.field.checkbox{display:flex; align-items:center; gap:8px; margin-top:4px;}
+.field.checkbox input{width:16px; height:16px;}
+
+.evidence-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
+.evidence-thumb{position:relative; width:68px; height:68px; border-radius:8px; overflow:hidden; border:1px solid var(--line-strong);}
+.evidence-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+.evidence-thumb .rm{position:absolute; top:2px; right:2px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; width:18px; height:18px; font-size:11px; cursor:pointer; line-height:1;}
+.evidence-add{
+  width:68px; height:68px; border-radius:8px; border:1px dashed var(--line-strong); background:transparent;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft); font-size:20px;
+}
+.evidence-add:hover{border-color:var(--accent); color:var(--accent);}
+
+.locked-panel{text-align:center; padding:50px 20px; color:var(--ink-soft);}
+.locked-panel .mark{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent);}
+
+.toast{
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:var(--ink); color:var(--paper); padding:10px 18px; border-radius:8px; font-size:13px;
+  box-shadow:var(--shadow); z-index:50; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(-4px);}
+
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:6px;}
+
+.build-banner{
+  background:var(--accent-soft); border:1px solid var(--accent); color:var(--accent);
+  border-radius:8px; padding:9px 14px; font-family:var(--mono); font-size:11.5px; margin-bottom:16px;
+}
+
+/* ---------- Floating dashboard panel ---------- */
+.dash-float{
+  position:fixed; top:16px; right:16px; bottom:16px; z-index:40;
+  width:340px; max-width:calc(100vw - 32px);
+  display:flex; flex-direction:column;
+  background:var(--panel); border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 8px 30px rgba(28,37,48,.16);
+  transition:width .18s ease, opacity .18s ease;
+}
+.dash-float.collapsed{
+  width:44px; overflow:hidden;
+}
+.dash-float-head{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:12px 14px; border-bottom:1px solid var(--line); flex-shrink:0;
+}
+.dash-float.collapsed .dash-float-head{border-bottom:none;}
+.dash-float-head .ttl{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); white-space:nowrap; overflow:hidden;}
+.dash-float.collapsed .dash-float-head .ttl{display:none;}
+.dash-toggle{
+  border:1px solid var(--line-strong); background:var(--paper); color:var(--ink);
+  width:26px; height:26px; border-radius:7px; cursor:pointer; font-size:13px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.dash-toggle:hover{border-color:var(--accent); color:var(--accent);}
+.dash-float-body{padding:14px; overflow-y:auto; flex:1; min-height:0;}
+.dash-float.collapsed .dash-float-body{display:none;}
+.dash-float .stat-grid{grid-template-columns:1fr 1fr; gap:8px;}
+.dash-float .stat-tile{padding:10px 11px;}
+.dash-float .stat-tile .num{font-size:22px;}
+.dash-float .panel{padding:12px 13px; box-shadow:none;}
+@media (max-width:900px){
+  .dash-float{top:auto; bottom:16px; right:16px; height:auto; max-height:70vh;}
+  .dash-float.collapsed{height:44px;}
+}
+.evidence-hint{font-size:11.5px; color:var(--ink-soft); margin-top:6px;}
+.report-photos figure{margin:0;}
+.report-photos figcaption{display:none;}
+.print-only{display:none;}
+.ai-panel{border-style:dashed;}
+.ai-intro{color:var(--ink-soft); font-size:13.5px; margin:4px 0 12px;}
+.ai-actions{display:flex; gap:10px; flex-wrap:wrap;}
+.ai-actions .btn[disabled]{opacity:.45; cursor:default;}
+.ai-preview{width:100%; min-height:220px; margin-top:12px; padding:10px; border-radius:8px; border:1px solid var(--line-strong); background:var(--paper-alt); color:var(--ink); font-family:var(--mono); font-size:11.5px; line-height:1.5;}
+.ai-draft{min-height:180px !important;}
+.ai-note{font-size:12px; color:var(--ink-soft); margin:8px 0 0;}
+.ai-print-text{white-space:pre-wrap; font-size:12.5px; border-left:3px solid var(--medium); padding-left:10px;}
+.ai-print[data-empty]{display:none !important;}
+.ai-print-note{font-size:10.5px; color:var(--ink-soft); margin:8px 0 0;}
+
+/* ---------- Print / Save as PDF ---------- */
+@media print{
+  body, body[data-theme="dark"]{
+    --ink:#1c2530; --ink-soft:#4a5568; --paper:#ffffff; --paper-alt:#f6f2e9; --panel:#ffffff;
+    --line:#d9d2c0; --line-strong:#c9bea2; --accent:#b5551f; --accent-soft:#f6ece2;
+    --critical-bg:#fbe9e8; --high-bg:#fbeee4; --medium-bg:#faf3df; --low-bg:#e9f2ea; --good-bg:#e9f2ea;
+    background:#fff !important; color:#1c2530; font-size:12px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  body::before{display:none !important;}
+  .sidebar, .topbar, .dash-float, .sidebar-backdrop, .toast, .no-print, .menu-toggle{display:none !important;}
+  #app{display:block;}
+  .main, body.dash-expanded .main{padding:0 !important;}
+  .view, .view.wide{max-width:none; padding:0 0 10px;}
+  .panel{box-shadow:none; border-color:#cfc6b0; padding:12px 14px;}
+  .panel + .panel{margin-top:10px;}
+  .check-card{box-shadow:none; break-inside:avoid; page-break-inside:avoid;}
+  h3, h4{break-after:avoid; page-break-after:avoid;}
+  .print-only{display:block;}
+  .ch-grid{grid-template-columns:1fr 1fr !important;}
+  .print-head{border-bottom:2px solid #1c2530; padding-bottom:8px; margin-bottom:12px; font-family:var(--mono); font-size:11px;}
+  .print-head .mark{color:#b5551f; font-weight:700; letter-spacing:.12em; text-transform:uppercase;}
+  .print-foot{margin-top:14px; font-size:10.5px; color:#4a5568;}
+  .report-photos{gap:10px;}
+  .report-photos .evidence-thumb{width:46%; height:auto; overflow:visible; border:1px solid #cfc6b0; padding:4px; break-inside:avoid; page-break-inside:avoid;}
+  .report-photos .evidence-thumb img{width:100%; height:auto; max-height:230px; object-fit:contain;}
+  .report-photos figcaption{display:block; font-family:var(--mono); font-size:10px; color:#4a5568; margin-top:3px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="mark">The Snag Tag</div>
+      <h1>Pre-Home Inspection</h1>
+      <div class="sub">Buyer blind-spot screening system</div>
+    </div>
+
+    <div class="property-picker">
+      <select id="propertySelect"></select>
+      <button class="add-property" id="addPropertyBtn">+ New property</button>
+    </div>
+
+    <nav class="sections" id="sectionNav"></nav>
+
+    <div class="sidebar-foot">
+      <div class="theme-toggle">
+        <span>Light / Dark</span>
+        <button id="themeBtn">Light</button>
+      </div>
+      <div class="build-tag" id="buildTag">v1.2 - evidence, report &amp; AI draft helper</div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="menu-toggle" id="menuToggle" title="Menu" aria-label="Open menu">☰</button>
+        <div>
+          <div class="crumb" id="crumb">Welcome</div>
+          <h2 id="viewTitle">Pre-Home Inspection</h2>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn small" id="exportBtn">Export backup</button>
+        <button class="btn small" id="importBtn">Import</button>
+        <input type="file" id="importFile" accept=".json" hidden>
+      </div>
+    </div>
+
+    <div class="view" id="viewRoot"></div>
+  </div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="dash-float collapsed" id="dashFloat">
+    <div class="dash-float-head">
+      <span class="ttl">Inspection Dashboard</span>
+      <button class="dash-toggle" id="dashToggle" title="Expand/collapse dashboard">▸</button>
+    </div>
+    <div class="dash-float-body" id="dashFloatBody"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   PRE-HOME INSPECTION - DATA ENGINE
+   Single-file, offline, localStorage-backed.
+   ========================================================= */
+const STORAGE_KEY = 'snagtag_prehome_v1';
+
+function loadStore(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){ console.warn('Could not read saved data, starting fresh.', e); }
+  return { properties: [], activePropertyId: null, theme: 'light' };
+}
+function saveStore(opts){
+  let ok = true;
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  }catch(e){
+    ok = false;
+    if(!(opts && opts.quiet)) showToast('Could not save - your browser storage is full. Export a backup, then remove some photos.');
+  }
+  if(document.getElementById('dashFloatBody')) renderDashboardFloat();
+  return ok;
+}
+let store = loadStore();
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
+
+/* ---------- Findings, photos and storage (v1.1) ---------- */
+function isTouched(st){
+  if(!st) return false;
+  const has = v => !!(v && String(v).trim());
+  return st.status!=='open' || has(st.observation) || has(st.actionRequired) || has(st.measurement) || has(st.location) || !!st.professionalFollowUp || !!(st.evidence && st.evidence.length);
+}
+function ensureFindingId(prop, st){
+  if(!prop || !st || st.findingId || !isTouched(st)) return false;
+  prop.findingSeq = (prop.findingSeq||0) + 1;
+  st.findingId = 'PHI-' + String(prop.findingSeq).padStart(3,'0');
+  return true;
+}
+function backfillFindingIds(prop){
+  if(!prop || !prop.checks) return false;
+  let changed = false;
+  SECTIONS.forEach(s=>s.checks.forEach(c=>{
+    const st = prop.checks[s.id] && prop.checks[s.id][c.id];
+    if(st && ensureFindingId(prop, st)) changed = true;
+  }));
+  return changed;
+}
+const PHOTO_MAX_PX = 900, PHOTO_QUALITY = 0.62;
+function shrinkImageSrc(src, cb){
+  const img = new Image();
+  img.onload = ()=>{
+    try{
+      const sc = Math.min(1, PHOTO_MAX_PX / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width*sc)); c.height = Math.max(1, Math.round(img.height*sc));
+      const g = c.getContext('2d');
+      g.fillStyle = '#ffffff'; g.fillRect(0,0,c.width,c.height);
+      g.drawImage(img, 0, 0, c.width, c.height);
+      cb(c.toDataURL('image/jpeg', PHOTO_QUALITY));
+    }catch(err){ cb(null); }
+  };
+  img.onerror = ()=>cb(null);
+  img.src = src;
+}
+function compressImageFile(file, cb){
+  const reader = new FileReader();
+  reader.onload = ()=>shrinkImageSrc(reader.result, cb);
+  reader.onerror = ()=>cb(null);
+  reader.readAsDataURL(file);
+}
+function storageUsedMB(){
+  try{ return (localStorage.getItem(STORAGE_KEY)||'').length / (1024*1024); }catch(e){ return 0; }
+}
+
+function newProperty(name){
+  return {
+    id: uid('prop'),
+    name: name || 'Untitled property',
+    address: '',
+    buyerName: '',
+    inspectionDate: new Date().toISOString().slice(0,10),
+    notes: '',
+    createdAt: new Date().toISOString(),
+    blindSpot: { answers: {}, completed: false, foundCount: 0 },
+    findingSeq: 0,
+    checks: {} // sectionId -> checkId -> { findingId, status, location, observation, measurement, evidence:[], actionRequired, professionalFollowUp, followUpNotes, updatedAt }
+  };
+}
+
+function getActiveProperty(){
+  return store.properties.find(p => p.id === store.activePropertyId) || null;
+}
+function ensureProperty(){
+  if(!store.properties.length){
+    const p = newProperty('My first property');
+    store.properties.push(p);
+    store.activePropertyId = p.id;
+    saveStore();
+  }
+  if(!getActiveProperty() && store.properties.length){
+    store.activePropertyId = store.properties[0].id;
+  }
+}
+function getCheckState(sectionId, checkId){
+  const prop = getActiveProperty();
+  if(!prop) return {};
+  if(!prop.checks[sectionId]) prop.checks[sectionId] = {};
+  if(!prop.checks[sectionId][checkId]){
+    prop.checks[sectionId][checkId] = {
+      status:'open', location:'', observation:'', measurement:'', evidence:[],
+      actionRequired:'', professionalFollowUp:false, followUpNotes:'', updatedAt:null
+    };
+  }
+  return prop.checks[sectionId][checkId];
+}
+
+/* =========================================================
+   CONTENT: SECTIONS (built in phases)
+   Each check: id, topic, requirement, lookFor[], howTo[],
+   measurement (optional), risk (critical/high/medium/low),
+   snagSpot (optional short insight)
+   ========================================================= */
+const SECTIONS = [
+{
+  id:'exterior', name:'Exterior',
+  intro:'Walk the full perimeter of the property in daylight. Most exterior problems are visible from ground level without any special access.',
+  checks:[
+    {
+      id:'ext-walls', topic:'Exterior wall surface', risk:'high',
+      requirement:'The outer wall surface should be continuous and free of significant cracking, bulging or crumbling.',
+      lookFor:['Cracks, especially wider ones or those running diagonally from window and door corners','Bulging, bowing or leaning sections of wall','Crumbling, flaking or soft render, stucco or brickwork','Areas where the surface looks patched or a different texture to the rest'],
+      howTo:['Walk the full perimeter in daylight, stepping back to view each wall as a whole before looking closely','Photograph any crack or damaged area next to a coin or tape measure for scale','Press lightly on any soft-looking render, do not force or dig at it'],
+      measurement:'Record crack width in mm (in) if a crack is found, e.g. 4 mm (0.16 in)',
+      snagSpot:'A single hairline crack is usually just surface movement. Several cracks radiating from the same corner, or a crack you can fit a fingernail into, is worth asking a structural engineer or building inspector about.'
+    },
+    {
+      id:'ext-mortar', topic:'Mortar joints and pointing', risk:'medium',
+      requirement:'Mortar between bricks or blocks should be intact, without significant gaps or crumbling.',
+      lookFor:['Missing or recessed mortar between bricks or blocks','Mortar that crumbles or comes away when lightly touched','Different mortar colour or style in patches, suggesting past repair work'],
+      howTo:['Look along several courses of brickwork at different heights, not just eye level','Note whether damage is isolated or spread across a whole wall'],
+      snagSpot:'Patchy repointing in one small area is common and usually minor. Repointing across an entire wall can mean the property has an ongoing damp or movement issue that was never fully resolved.'
+    },
+    {
+      id:'ext-foundation', topic:'Visible foundation and base of walls', risk:'critical',
+      requirement:'The visible base of the building, where it meets the ground, should show no signs of settlement or movement.',
+      lookFor:['Cracks at or near ground level that appear to widen towards the bottom','Ground pulling away from the foundation, leaving a visible gap','Any part of the building that looks like it is leaning or sinking compared to the rest'],
+      howTo:['Crouch down and look along the base of each wall from a distance, sighting along the wall line','Compare opposite corners of the building for any visible difference in level'],
+      snagSpot:'Foundation and settlement concerns are one of the few areas where buyer observation should stop at "notice and document." Do not attempt to diagnose the cause yourself, a structural engineer is the right next step if anything here looks wrong.'
+    },
+    {
+      id:'ext-boundary', topic:'Boundary walls and fences', risk:'low',
+      requirement:'Boundary walls and fences should be stable, upright and in serviceable condition.',
+      lookFor:['Leaning, bulging or visibly unstable sections of wall or fence','Missing panels, posts or sections','Shared boundary structures where responsibility for maintenance is unclear'],
+      howTo:['Walk the full boundary line where accessible','Gently test whether a fence post moves at the base, without forcing it']
+    },
+    {
+      id:'ext-paving', topic:'Driveway, paths and paved areas', risk:'low',
+      requirement:'Paved and hard-standing areas should be even, well-drained and free of significant trip hazards.',
+      lookFor:['Cracked, sunken or heaved sections of paving','Standing water on paved surfaces after dry weather','Uneven joints between paving sections that could catch a foot'],
+      howTo:['Walk the full length of driveways and paths','Note any area where water appears to collect based on staining or algae growth']
+    }
+  ]
+},
+{
+  id:'roof-loft', name:'Roof / Loft',
+  intro:'Assess what is safely visible from ground level and, where access is available and safe, from inside the loft or attic space. Never climb onto a roof yourself.',
+  checks:[
+    {
+      id:'roof-covering', topic:'Roof covering condition', risk:'high',
+      requirement:'Roof tiles, shingles or sheeting should be intact, aligned and free of obvious damage.',
+      lookFor:['Missing, slipped, cracked or curling tiles or shingles','Patchy discolouration that could indicate moss, algae or past repair','Sagging or uneven sections along the roof line','Visible repairs using mismatched materials'],
+      howTo:['View the roof from several points around the property, and from a neighbouring higher vantage point if safely available','Use binoculars or your phone’s zoom rather than trying to get closer','Never climb onto the roof yourself'],
+      snagSpot:'A roofline that dips or waves when sighted from a distance is often easier to spot than individual damaged tiles, and can point to timber problems underneath.'
+    },
+    {
+      id:'roof-gutters', topic:'Guttering and downpipes', risk:'medium',
+      requirement:'Gutters and downpipes should be securely fixed, unblocked and directing water away from the building.',
+      lookFor:['Sagging, disconnected or overflowing gutters','Plant growth in gutters, suggesting standing debris and poor drainage','Staining on walls below gutter joints, suggesting past or current overflow','Downpipes that discharge directly against the foundation rather than away from it'],
+      howTo:['Look at gutters and downpipes from ground level around the whole property','Check during or shortly after rain if the viewing timing allows it']
+    },
+    {
+      id:'roof-chimney', topic:'Chimney condition (if present)', risk:'medium',
+      requirement:'A chimney should stand straight, with intact brickwork, flashing and a visible cap or cover.',
+      lookFor:['Leaning or visibly damaged chimney stack','Missing or damaged flashing where the chimney meets the roof','Cracked or missing chimney cap or cover','Staining on the roof or in the loft immediately around the chimney base'],
+      howTo:['View from ground level at a distance where the full chimney is visible','If the loft is accessible, check the area around the chimney breast for staining']
+    },
+    {
+      id:'roof-loft-space', topic:'Loft or attic space (if accessible)', risk:'high',
+      requirement:'The loft space should be dry, adequately ventilated, and show no signs of active or past water ingress.',
+      lookFor:['Water stains, dark patches or damp insulation','Daylight visible through the roof structure','Damaged, sagging or rotten-looking timber','Signs of pest activity such as droppings or nesting material','Insulation that looks disturbed, compressed or missing in patches'],
+      howTo:['Ask permission before entering the loft space','Use a torch and step only on structural joists or a boarded walkway, never directly on ceiling material','Look up at the underside of the roof as well as down at the insulation'],
+      snagSpot:'Roof and loft observations should include signs of leaks, moisture, damaged materials, pests or inadequate ventilation, not just obvious holes. A musty smell in the loft is often the earliest sign of a problem.'
+    },
+    {
+      id:'roof-age', topic:'Roof age and history', risk:'medium',
+      requirement:'The buyer should have a reasonable understanding of the roof’s age and any past repair or replacement history.',
+      lookFor:['Consistent material and colour across the whole roof, suggesting a single installation','Patchy sections that suggest partial repairs over time'],
+      howTo:['Ask the seller or agent directly when the roof was last replaced or significantly repaired','Ask whether any roof-related insurance claims have been made']
+    }
+  ]
+},
+{
+  id:'structure', name:'Structure',
+  intro:'Structural issues are rarely diagnosed from a single sign. Look for patterns across the whole property rather than judging any one observation in isolation.',
+  checks:[
+    {
+      id:'struct-ext-cracks', topic:'External structural cracks', risk:'critical',
+      requirement:'Cracks in external walls should be assessed by location, width, direction and whether they pass through the full wall thickness where visible.',
+      lookFor:['Diagonal cracks from the corners of windows or doors','Cracks that are wider at one end than the other','Cracks that continue from the wall onto the foundation or roofline','Cracks visible on both the inside and outside of the same wall, in the same location'],
+      howTo:['Photograph each crack with something for scale next to it','Note the location on a simple sketch or in your notes for each crack found','Revisit any crack on a second viewing if possible, to check whether it has changed'],
+      measurement:'Record width in mm (in) and, where visible, approximate length in m (ft)',
+      snagSpot:'Cracks should not be judged only by appearance. Location, pattern, movement and any doors or windows nearby that no longer close squarely are what actually matter.'
+    },
+    {
+      id:'struct-int-cracks', topic:'Internal wall and ceiling cracks', risk:'high',
+      requirement:'Internal cracks should be checked for the same pattern indicators as external cracks, and cross-referenced against the corresponding external wall.',
+      lookFor:['Cracks at the junction between walls and ceilings','Cracks above internal doorways','Cracks that reappear after cosmetic repair, visible as a thin line through fresh paint'],
+      howTo:['Check corners and door frames in every room, not just the most visible walls','Compare what you see inside with what you noted on the corresponding external wall']
+    },
+    {
+      id:'struct-doors-windows', topic:'Door and window operation', risk:'medium',
+      requirement:'Doors and windows throughout the property should open, close and latch without sticking or excessive force.',
+      lookFor:['Doors or windows that stick, drag or need force to close','Visible gaps around a closed door or window frame on one side only','Multiple doors or windows in the same area of the house showing the same issue'],
+      howTo:['Test every internal and external door and a sample of windows in each room','Note whether an issue is isolated to one opening or repeated nearby'],
+      snagSpot:'One sticking door rarely means much on its own. A pattern across several openings in the same part of the house is the real signal worth asking about.'
+    },
+    {
+      id:'struct-floors', topic:'Floor levels and stability', risk:'high',
+      requirement:'Floors should feel level and stable underfoot, without noticeable slope, bounce or soft spots.',
+      lookFor:['A noticeable slope when standing or walking across a room','Bounce or flex underfoot, particularly on upper floors','Soft, spongy or uneven spots in flooring'],
+      howTo:['Walk slowly across each room, paying attention to how the floor feels underfoot','A small ball or marble can reveal a slope if placed on a hard floor and allowed to roll']
+    },
+    {
+      id:'struct-extensions', topic:'Extension and addition junctions', risk:'high',
+      requirement:'Where an extension or addition meets the original structure, the junction should be sound and free of separation.',
+      lookFor:['A visible line or step where an extension meets the original building','Cracking specifically along that junction line','Different foundation depths or materials visible at the junction, if any is exposed'],
+      howTo:['Ask whether any part of the property has been extended and when','Examine the junction from both inside and outside where accessible'],
+      snagSpot:'Where old and new construction meet is a common location for movement, because the two sections can settle at different rates. This junction deserves closer attention than the walls either side of it.'
+    }
+  ]
+},
+{
+  id:'water-systems', name:'Water Systems',
+  intro:'This section covers the property’s water supply and hot water system. Fixtures, drains and individual pipework are covered separately under Plumbing.',
+  checks:[
+    {
+      id:'water-supply', topic:'Water supply and main shut-off', risk:'medium',
+      requirement:'The property should have a clearly identifiable water supply with an accessible main shut-off valve.',
+      lookFor:['A main shut-off valve that is visible, accessible and not obstructed','Corrosion or leaking around the main supply entry point'],
+      howTo:['Ask the seller or agent to point out the main shut-off valve location','Confirm it turns, without forcing it, and that it is not painted or rusted shut']
+    },
+    {
+      id:'water-pressure', topic:'Water pressure and flow', risk:'low',
+      requirement:'Taps throughout the property should deliver a reasonable, consistent flow of water.',
+      lookFor:['Noticeably weak flow at any tap compared to others','A significant pressure drop when a second tap or the shower is run at the same time'],
+      howTo:['Run a tap in the kitchen and a tap in a bathroom, noting flow strength','Run a second fixture at the same time to check for a major pressure drop']
+    },
+    {
+      id:'water-heater', topic:'Hot water system / geyser', risk:'high',
+      requirement:'The hot water heating system should be sound, adequately supported and show no signs of leaking or corrosion.',
+      lookFor:['Rust staining or corrosion on the tank or fittings','Water pooling or staining on the floor beneath the unit','Visible age indicators such as an old-style unit, dented casing or missing insulation jacket','A pressure relief valve or overflow pipe, and whether it shows signs of ever discharging'],
+      howTo:['Locate the water heater and visually inspect the tank, fittings and the floor area beneath it','Ask the seller for the age and last service date if known'],
+      snagSpot:'A water heater that is near the end of its typical service life is not necessarily a problem today, but it is a cost worth factoring into your decision and a reasonable question to ask the seller about.'
+    },
+    {
+      id:'water-tank', topic:'Water storage tank or cistern (if applicable)', risk:'medium',
+      requirement:'Any water storage tank should be covered, structurally sound and show no signs of contamination.',
+      lookFor:['Missing or damaged tank cover','Visible discolouration, sediment or debris in the water where checkable','Corrosion or leaking at tank fittings'],
+      howTo:['Ask whether the property relies on a storage tank, borehole or well in addition to, or instead of, mains supply','Visually check the tank exterior and cover if safely accessible']
+    },
+    {
+      id:'water-leak-check', topic:'Whole-property leak check', risk:'medium',
+      requirement:'A simple meter check can reveal a hidden leak that is not visible anywhere else in the property.',
+      lookFor:['Water meter movement while all taps and water-using appliances are switched off'],
+      howTo:['Ask the seller or agent to point out the water meter','With all taps and appliances off, note the meter reading, wait 20 to 30 minutes without using water, then check again'],
+      snagSpot:'A moving meter with everything switched off is one of the most reliable signs of a hidden leak, and something a casual viewing would never catch.'
+    }
+  ]
+},
+{
+  id:'plumbing', name:'Plumbing',
+  intro:'This section covers fixtures, drains and the pipework a buyer can reasonably see. Do not dismantle any fitting or cut into any wall or floor.',
+  checks:[
+    {
+      id:'plumb-under-sink', topic:'Under-sink and under-fixture pipework', risk:'high',
+      requirement:'Pipework beneath sinks and other fixtures should be dry, sound and free of active or past leak signs.',
+      lookFor:['Water staining, swelling or discolouration on the cabinet base or surrounding material','Corrosion or mineral build-up around pipe joints','A musty smell when opening cabinet doors'],
+      howTo:['Open the cabinet under every kitchen and bathroom sink','Feel along the underside of visible pipes for dampness, without forcing access to anything concealed']
+    },
+    {
+      id:'plumb-taps', topic:'Taps and fixtures', risk:'low',
+      requirement:'Taps and fixtures should operate smoothly, seal fully when closed, and show no significant wobble or looseness.',
+      lookFor:['Dripping after a tap is fully closed','Wobble or looseness where a tap meets the counter or wall','Visible limescale or mineral staining around fixtures'],
+      howTo:['Test every tap in the property, turning fully off and checking for drips after a few seconds']
+    },
+    {
+      id:'plumb-toilets', topic:'Toilet operation and base seal', risk:'medium',
+      requirement:'Each toilet should flush properly, refill correctly, and sit firmly on the floor without rocking.',
+      lookFor:['Rocking or movement when the toilet is gently pushed at the top','Staining or a damp patch on the floor around the base','A cistern that continues to run or refill after flushing'],
+      howTo:['Gently test for base movement with light pressure, do not force it','Flush and observe the full refill cycle']
+    },
+    {
+      id:'plumb-drainage', topic:'Drainage speed', risk:'low',
+      requirement:'Sinks, showers and baths should drain at a normal speed without pooling.',
+      lookFor:['Water draining slowly or pooling around a plughole','Gurgling sounds from drains during use'],
+      howTo:['Run water briefly at each sink, shower and bath and observe how quickly it clears']
+    },
+    {
+      id:'plumb-pipe-material', topic:'Visible pipe material and condition', risk:'medium',
+      requirement:'Visible pipework should be in serviceable condition, with any repairs completed to a consistent standard.',
+      lookFor:['Mixed or mismatched pipe materials in the same run, suggesting a partial past repair','Visible corrosion, especially at joints','Exposed pipework that looks aged relative to the rest of the property'],
+      howTo:['Look at any exposed pipework in utility areas, basements or under fixtures','Ask about the age of the plumbing system and any known past repairs or replacements']
+    }
+  ]
+},
+{
+  id:'electrical', name:'Electrical',
+  intro:'Electrical checks in this section are strictly observational. Never open a panel, touch wiring, or test anything beyond normal switch and outlet use. Any concern here is a reason to bring in a qualified electrician, not to investigate further yourself.',
+  checks:[
+    {
+      id:'elec-panel-ext', topic:'Electrical panel, exterior appearance only', risk:'critical',
+      requirement:'The electrical panel should be accessible, clearly labelled and show no external signs of damage or overheating.',
+      lookFor:['Scorch marks, discolouration or melted-looking material on or around the panel','A panel that is difficult to access, blocked, or in a damp location','Missing or illegible circuit labelling','A burning smell near the panel'],
+      howTo:['Look at the closed panel from a normal standing position','Do not open the panel cover or touch anything inside it, that is a job for a qualified electrician'],
+      snagSpot:'Electrical concerns should stay limited to observable warning signs. Never open a panel or test wiring yourself.'
+    },
+    {
+      id:'elec-outlets', topic:'Outlets and switches', risk:'high',
+      requirement:'Outlets and switches throughout the property should look intact, secure and free of any warning signs.',
+      lookFor:['Cracked, loose or scorched outlet or switch covers','Outlets that feel warm to the touch during normal use','Outlets with no visible safety shutters, in older properties','Missing covers exposing internal wiring'],
+      howTo:['Visually check outlets and switches in every room','Test that a lamp or phone charger works in a sample of outlets, using only normal plugs']
+    },
+    {
+      id:'elec-lighting', topic:'Light fixtures and fittings', risk:'medium',
+      requirement:'Light fixtures should operate normally and show no signs of overheating or damage.',
+      lookFor:['Flickering lights that do not resolve when a bulb is replaced','Discoloured or melted-looking areas around light fittings','Exposed wiring at any fixture'],
+      howTo:['Turn on lighting in every room during the viewing','Note any fixture that flickers, buzzes or does not respond normally']
+    },
+    {
+      id:'elec-extension-use', topic:'Reliance on extension cords or adapters', risk:'medium',
+      requirement:'A property should not show signs of relying heavily on extension cords or multi-way adapters as a permanent solution.',
+      lookFor:['Multiple extension cords or adapters left permanently in place','Cords running under rugs or through doorways','Overloaded-looking power strips'],
+      howTo:['Note any room that appears to rely on extension cords for everyday appliances rather than fixed outlets'],
+      snagSpot:'Heavy reliance on extension cords is often a sign that the property does not have enough outlets for modern use, which can mean the electrical system has not been updated in some time.'
+    },
+    {
+      id:'elec-age-history', topic:'Electrical system age and history', risk:'high',
+      requirement:'The buyer should have a reasonable understanding of the age and history of the electrical system.',
+      lookFor:['A panel or wiring style that looks noticeably older than the rest of the property','Mixed wiring types where visible, suggesting partial upgrades over time'],
+      howTo:['Ask the seller or agent when the electrical system was last inspected, upgraded or certified','Ask whether any electrical work has been done without professional sign-off']
+    }
+  ]
+},
+{
+  id:'damp-moisture-mould', name:'Damp / Moisture / Mould',
+  intro:'Moisture problems are frequently the biggest gap between what a casual viewing notices and what is actually present. Use your sense of smell as well as sight.',
+  checks:[
+    {
+      id:'damp-smell', topic:'Musty or damp smell', risk:'high',
+      requirement:'No room should have a persistent musty, damp or mouldy smell.',
+      lookFor:['A musty smell in any room, especially bathrooms, kitchens, basements and closets','A smell that is stronger in one specific area than the rest of the property'],
+      howTo:['Stand quietly in each room for a moment and notice the smell before looking at anything else','Open a closet or cupboard door and check for smell differences from the main room'],
+      snagSpot:'A musty smell may indicate moisture that is not visible yet, for example inside a wall cavity or under flooring. Trust your nose as much as your eyes.'
+    },
+    {
+      id:'damp-staining', topic:'Staining on walls and ceilings', risk:'high',
+      requirement:'Walls and ceilings should be free of staining consistent with past or current water ingress.',
+      lookFor:['Brown, yellow or grey staining, especially on ceilings below bathrooms or roof valleys','A tide-mark pattern on a lower wall, suggesting rising damp','Bubbling, peeling or flaking paint'],
+      howTo:['Check ceilings and walls in every room, including areas behind furniture where visible','Look specifically beneath bathrooms, near chimneys and below roof valleys'],
+      snagSpot:'A stain with fresh paint immediately around it, but not beyond it, often means a leak was covered rather than fixed. Ask when the stain first appeared and what was done about it.'
+    },
+    {
+      id:'damp-visible-mould', topic:'Visible mould growth', risk:'critical',
+      requirement:'There should be no visible mould growth, particularly in bathrooms, kitchens and any poorly ventilated space.',
+      lookFor:['Black, green or white spotting on walls, ceilings, grout or window frames','Mould on window sills or behind curtains','A recently cleaned or freshly painted patch that could be hiding a mould issue'],
+      howTo:['Check bathroom ceilings, shower grout, window frames and any built-in wardrobes','Look behind curtains and blinds where condensation commonly collects'],
+      snagSpot:'A very freshly cleaned bathroom, and nowhere else in the house, can sometimes mean mould was addressed just before the viewing rather than as routine cleaning. It is a reasonable, low-key question to ask.'
+    },
+    {
+      id:'damp-condensation', topic:'Condensation and ventilation', risk:'medium',
+      requirement:'Windows and bathrooms should show reasonable ventilation, without heavy persistent condensation.',
+      lookFor:['Condensation on the inside of windows during the viewing','Extractor fans in bathrooms and kitchens that are missing, damaged or clearly not working','Windows that do not open, restricting natural ventilation'],
+      howTo:['Check whether bathroom and kitchen extractor fans are present and turn on when tested','Try opening a sample of windows in different rooms']
+    },
+    {
+      id:'damp-below-grade', topic:'Basement, cellar or below-ground areas (if present)', risk:'high',
+      requirement:'Any below-ground space should be dry, with no evidence of water ingress or persistent dampness.',
+      lookFor:['Watermarks on lower walls or floor','A noticeably cooler, damper feel compared to the rest of the property','Efflorescence, a white powdery mineral deposit on masonry, indicating past moisture movement through the wall'],
+      howTo:['If a basement or cellar is present, check the full floor and wall area','Ask directly whether the space has ever flooded or required a sump pump or other drainage measure']
+    }
+  ]
+},
+{
+  id:'pests', name:'Pests',
+  intro:'Pest activity ranges from a minor nuisance to a structurally significant issue. Buyer screening is about spotting signs, not treating or removing anything.',
+  checks:[
+    {
+      id:'pest-droppings', topic:'Droppings and nesting signs', risk:'high',
+      requirement:'There should be no visible droppings, nesting material or gnaw marks in accessible areas.',
+      lookFor:['Small droppings along skirting boards, in cupboards or in the loft','Nesting material made from shredded paper, fabric or insulation','Gnaw marks on wood, wiring insulation or stored items'],
+      howTo:['Check along skirting boards, inside cupboards, and in the loft or roof space if accessible','Look in less-disturbed areas such as behind large appliances, where visible without moving them']
+    },
+    {
+      id:'pest-wood-damage', topic:'Wood-boring insect signs', risk:'high',
+      requirement:'Structural and exposed timber should show no signs of wood-boring insect activity.',
+      lookFor:['Small round exit holes in timber','Fine, powdery dust beneath wooden beams or furniture','Timber that sounds unusually hollow when lightly tapped'],
+      howTo:['Visually check exposed structural timber, especially in the loft and any older parts of the property','Lightly tap a suspect area of timber with a knuckle rather than a tool, and stop there, do not test further yourself'],
+      snagSpot:'Wood that sounds hollow when lightly tapped, in a structural area, is worth flagging for a pest or structural specialist rather than investigating further yourself.'
+    },
+    {
+      id:'pest-termite-mud', topic:'Termite mud tubes or shelter tubes (where relevant to the region)', risk:'critical',
+      requirement:'External walls and foundations should be free of thin mud tubes running up from the ground.',
+      lookFor:['Narrow, pencil-width mud tubes running up an external wall or foundation','Damaged skirting boards or door frames near ground level'],
+      howTo:['Check the base of external walls, especially where wood is close to soil level'],
+      snagSpot:'Termite activity varies enormously by region and climate. If this is a known local risk, mention it directly to a pest inspector rather than relying on a general property screening.'
+    },
+    {
+      id:'pest-entry-points', topic:'Potential pest entry points', risk:'low',
+      requirement:'Obvious gaps that could allow pests to enter the property should be minimal.',
+      lookFor:['Gaps around pipework entering the building','Unscreened vents or damaged screens','Gaps under exterior doors'],
+      howTo:['Check where pipes and cables enter the building from outside','Check door thresholds for daylight visible underneath']
+    },
+    {
+      id:'pest-treatment-history', topic:'Pest treatment history', risk:'low',
+      requirement:'The buyer should understand any past pest issues and how they were resolved.',
+      lookFor:['Bait stations or treatment equipment visible around the property'],
+      howTo:['Ask the seller or agent whether the property has had any past pest treatments, and for what']
+    }
+  ]
+},
+{
+  id:'fire-safety', name:'Fire Safety',
+  intro:'Fire safety checks focus on what is present, visible and testable without any specialist equipment.',
+  checks:[
+    {
+      id:'fire-alarms', topic:'Smoke and heat alarms', risk:'critical',
+      requirement:'Working smoke alarms should be present in appropriate locations throughout the property.',
+      lookFor:['Absent smoke alarms in bedrooms, hallways or the kitchen area','Alarms that look old, discoloured or have a disconnected wire','A missing or dead battery indicator light, where the alarm has one'],
+      howTo:['Locate smoke alarms in each main area of the property','Press the test button on each alarm if accessible, and confirm an audible response'],
+      snagSpot:'A property with no visible smoke alarms at all, or only one for a multi-level home, is one of the more important gaps to flag, since it is inexpensive to fix but genuinely safety-critical.'
+    },
+    {
+      id:'fire-extinguisher', topic:'Fire extinguisher or fire blanket (where present)', risk:'low',
+      requirement:'Where a fire extinguisher or blanket is present, it should be in date and accessible.',
+      lookFor:['An extinguisher with an expired inspection tag or gauge in the red zone','An extinguisher or blanket stored somewhere hard to reach in an emergency'],
+      howTo:['Check the inspection date tag or pressure gauge if a fire extinguisher is present','Note the location relative to the kitchen or main living area']
+    },
+    {
+      id:'fire-escape-routes', topic:'Escape routes', risk:'high',
+      requirement:'Each level of the property should have a clear, unobstructed route to an exit.',
+      lookFor:['Hallways or stairwells blocked with stored items','Bedroom windows that do not open, on upper floors, where they may serve as a secondary escape route','Security bars on windows with no visible quick-release mechanism'],
+      howTo:['Walk the main route from each bedroom to an exterior door','Test that a sample of windows intended as escape routes actually open']
+    },
+    {
+      id:'fire-heat-sources', topic:'Open flame and heat sources', risk:'medium',
+      requirement:'Fireplaces, wood stoves and similar heat sources should have appropriate clearance and visible maintenance.',
+      lookFor:['Combustible material such as furniture or curtains close to a fireplace or stove','Heavy soot build-up or a chimney that has not visibly been swept recently','Missing fireplace screen or guard'],
+      howTo:['If a fireplace or wood stove is present, check the clearance around it and ask about last servicing or sweeping date']
+    },
+    {
+      id:'fire-electrical-overload', topic:'Fire risk from electrical overload signs', risk:'medium',
+      requirement:'The property should not show signs of electrical overload that could present a fire risk.',
+      lookFor:['Warm outlet covers','Multiple high-draw appliances sharing one extension lead or adapter','Discolouration around plugs or switches'],
+      howTo:['This overlaps with the Electrical section, cross-check any findings there for fire relevance']
+    }
+  ]
+},
+{
+  id:'accessibility', name:'Accessibility',
+  intro:'Accessibility matters for current needs and for how easily the property could adapt to future ones, including ageing in place, mobility changes, or visiting family members.',
+  checks:[
+    {
+      id:'access-entry', topic:'Main entry access', risk:'low',
+      requirement:'At least one entry point should be reasonably navigable for a wheelchair, walker or pushchair.',
+      lookFor:['Steps at the main entrance with no ramp alternative','Narrow gates or paths leading to the entrance','Uneven or loose ground surfaces along the approach'],
+      howTo:['Walk the main approach to the property as if pushing a stroller or wheelchair','Note the number and height of any steps at each entrance'],
+      measurement:'Note step height in cm (in) and doorway width in cm (in) if relevant to your needs'
+    },
+    {
+      id:'access-doorways', topic:'Doorway and hallway widths', risk:'low',
+      requirement:'Interior doorways and hallways should be wide enough for the buyer’s current or anticipated needs.',
+      lookFor:['Narrow doorways, particularly to bathrooms','Tight turns in hallways that could restrict larger equipment'],
+      howTo:['Measure key doorway widths if accessibility is a priority for your household']
+    },
+    {
+      id:'access-stairs', topic:'Stairs and level changes', risk:'medium',
+      requirement:'Stairs should have secure handrails and even, well-lit steps.',
+      lookFor:['Missing or loose handrails','Uneven step heights or worn, slippery step edges','Poor lighting on stairways'],
+      howTo:['Walk the full staircase, testing handrail security by hand','Check lighting at both the top and bottom of the stairs']
+    },
+    {
+      id:'access-bathroom', topic:'Bathroom accessibility', risk:'low',
+      requirement:'At least one bathroom should be reasonably adaptable if accessibility needs change over time.',
+      lookFor:['Step-in showers versus level-access options','Available wall space near the toilet and shower for potential grab bar installation'],
+      howTo:['Consider whether the primary bathroom could be adapted in future without major structural work']
+    },
+    {
+      id:'access-single-level', topic:'Single-level living potential', risk:'low',
+      requirement:'The buyer should understand whether the property allows for single-level living, now or with modification.',
+      lookFor:['A bedroom and full bathroom on the entry level, or the potential to create one'],
+      howTo:['Consider long-term needs, not just the household’s situation today']
+    }
+  ]
+},
+{
+  id:'interior-rooms', name:'Interior / Rooms',
+  intro:'A room-by-room pass for general liveability and finish quality, separate from the structural, damp and electrical checks covered elsewhere.',
+  checks:[
+    {
+      id:'int-flooring', topic:'Flooring condition', risk:'low',
+      requirement:'Flooring throughout the property should be sound, secure and free of significant damage.',
+      lookFor:['Loose, lifting or damaged flooring material','Squeaking or movement underfoot beyond normal, minor creaks','Noticeable height differences between adjoining rooms'],
+      howTo:['Walk every room, paying attention to how flooring feels and sounds underfoot','Check floor coverings for tears, staining or wear patterns that seem inconsistent with the property’s stated age']
+    },
+    {
+      id:'int-ceilings-walls', topic:'Ceiling and wall finish', risk:'low',
+      requirement:'Ceilings and walls should have a sound, even finish, separate from any crack or damp findings already recorded elsewhere.',
+      lookFor:['Uneven or poorly finished plaster or drywall','Visible nail or screw pops','Mismatched paint or wallpaper suggesting partial redecoration'],
+      howTo:['Look at wall and ceiling surfaces under different lighting angles, which reveals unevenness more clearly']
+    },
+    {
+      id:'int-kitchen', topic:'Kitchen fixtures and layout', risk:'low',
+      requirement:'Fitted kitchen units, worktops and integrated appliances should be functional and in serviceable condition.',
+      lookFor:['Water damage around the sink or dishwasher area','Cabinet doors or drawers that do not close properly','Worktop damage, especially near the sink or hob'],
+      howTo:['Open a sample of cabinets and drawers','Run the tap and check under the sink, cross-referencing with the Plumbing section']
+    },
+    {
+      id:'int-storage', topic:'Storage and room proportions', risk:'low',
+      requirement:'Storage provision and room layout should be practical for ordinary household use.',
+      lookFor:['Very limited built-in storage relative to the property size','Awkward room shapes that limit practical furniture layout'],
+      howTo:['Note storage in each bedroom and any hallway or utility storage'],
+    },
+    {
+      id:'int-noise', topic:'Noise and neighbouring properties', risk:'low',
+      requirement:'Noise levels from neighbouring units, shared walls or nearby roads should be reasonable for the buyer’s expectations.',
+      lookFor:['Audible sound transfer from neighbouring units during the viewing','Proximity to a busy road, railway or other consistent noise source'],
+      howTo:['Stand quietly in a few rooms and simply listen','If possible, ask to view or revisit at a different time of day']
+    }
+  ]
+},
+{
+  id:'windows-doors', name:'Windows / Doors',
+  intro:'This section focuses on windows and doors as part of the building envelope, security and weatherproofing, separate from the structural movement checks in the Structure section.',
+  checks:[
+    {
+      id:'wd-glazing', topic:'Window glazing condition', risk:'medium',
+      requirement:'Window glass should be intact, with no cracks, and double or triple glazing should show no internal fogging.',
+      lookFor:['Cracked or chipped glass','Fogging or condensation trapped between panes of double or triple glazing, which indicates a failed seal','Visible gaps between glass and frame'],
+      howTo:['Check each window in daylight, looking directly through the glass for trapped moisture or haze'],
+      snagSpot:'Fogging between panes is easy to miss on a quick viewing but expensive to fix later. It only shows clearly at certain angles, so check each window rather than a sample.'
+    },
+    {
+      id:'wd-frames', topic:'Window and door frame condition', risk:'medium',
+      requirement:'Frames should be sound, weathertight and free of rot or significant wear.',
+      lookFor:['Soft or discoloured timber frames, suggesting rot','Peeling or cracked paint or sealant around frames','Gaps between the frame and surrounding wall'],
+      howTo:['Press gently on timber window sills and frames to check for softness, without forcing or damaging anything']
+    },
+    {
+      id:'wd-security', topic:'Locks and security hardware', risk:'medium',
+      requirement:'External doors and accessible windows should have functioning locks.',
+      lookFor:['Missing or broken locks on external doors or ground-floor windows','Doors that do not fully latch or seal when closed'],
+      howTo:['Test the lock on every external door','Check ground-floor and easily accessible window locks']
+    },
+    {
+      id:'wd-weatherproofing', topic:'Weatherstripping and draught sealing', risk:'low',
+      requirement:'Doors and windows should seal reasonably well against draughts.',
+      lookFor:['Visible daylight around a closed door or window edge','Worn, missing or perished weatherstripping'],
+      howTo:['Close each external door and window and check the edges for visible gaps or daylight']
+    },
+    {
+      id:'wd-operation', topic:'Opening and closing mechanisms', risk:'low',
+      requirement:'All windows and doors should open, close and where applicable lock without excessive effort.',
+      lookFor:['Stiff or jammed hinges and mechanisms','Window stays or restrictors that are missing or broken'],
+      howTo:['Operate a sample of windows and every external door through a full open-close cycle']
+    }
+  ]
+},
+{
+  id:'grounds-drainage', name:'Grounds / Drainage',
+  intro:'This section covers the wider lot, landscaping and drainage systems beyond the immediate building perimeter already covered in Exterior.',
+  checks:[
+    {
+      id:'grounds-slope', topic:'Overall lot drainage and slope', risk:'medium',
+      requirement:'The broader lot should drain away from the property and any neighbouring structures.',
+      lookFor:['Low-lying areas of the garden or yard that hold water after rain','Erosion channels suggesting concentrated water flow','Drainage that appears to direct water towards a neighbouring property, which can create disputes'],
+      howTo:['Walk the full lot, not just the area immediately next to the building','Ask about drainage performance during heavy rain if the current viewing is in dry weather']
+    },
+    {
+      id:'grounds-trees', topic:'Trees and large vegetation near the building', risk:'medium',
+      requirement:'Large trees or shrubs should be positioned with reasonable clearance from the building and any underground services.',
+      lookFor:['Large trees very close to the foundation','Visible root heave affecting nearby paving or paths','Overhanging branches close to or touching the roof'],
+      howTo:['Note the size and proximity of any large tree relative to the building','Ask whether any trees have been removed near the property and why'],
+      snagSpot:'Large trees close to a foundation can affect soil moisture in a way that contributes to ground movement, particularly in shrinkable clay soils. This is worth mentioning to a structural engineer if you have other movement concerns.'
+    },
+    {
+      id:'grounds-retaining', topic:'Retaining walls (if present)', risk:'high',
+      requirement:'Any retaining wall should stand vertically, without visible leaning, bulging or cracking.',
+      lookFor:['Leaning or bulging retaining walls','Cracking or missing sections','Poor or absent drainage behind the wall, sometimes visible as damp staining or weep holes'],
+      howTo:['View any retaining wall from a distance to judge whether it stands straight','Look for weep holes or drainage pipes through the wall face']
+    },
+    {
+      id:'grounds-pool', topic:'Swimming pool or water feature (if present)', risk:'medium',
+      requirement:'Any pool or significant water feature should have visible safety measures and show no obvious structural or equipment issues.',
+      lookFor:['Missing or inadequate pool fencing or covers where safety-relevant','Visible cracking in pool surfaces','Pool equipment that looks old, corroded or inoperative'],
+      howTo:['If a pool is present, ask about its age, last resurfacing, and equipment service history']
+    },
+    {
+      id:'grounds-outbuildings', topic:'Sheds, garages and outbuildings', risk:'low',
+      requirement:'Any outbuilding should be structurally sound and consistent with the same condition standards as the main property.',
+      lookFor:['Similar structural, roof or damp signs as covered for the main building','Unclear ownership or permission status for any outbuilding'],
+      howTo:['Apply the same basic checks used on the main property to any significant outbuilding','Ask whether outbuildings were built with appropriate permissions']
+    }
+  ]
+},
+{
+  id:'heating-cooling-ventilation', name:'Heating / Cooling / Ventilation',
+  intro:'Systems that keep the property comfortable and adequately ventilated, separate from the hot water system covered under Water Systems.',
+  checks:[
+    {
+      id:'hcv-heating-system', topic:'Main heating system', risk:'high',
+      requirement:'The primary heating system should be functional, appropriately sized, and free of visible warning signs.',
+      lookFor:['Unusual noise, smell or visible damage from the heating unit','Rooms that feel noticeably colder than others, suggesting uneven heating','Visible age indicators on the heating unit'],
+      howTo:['Ask the seller or agent to demonstrate the heating system if possible','Ask for the age and last service date of the system'],
+      snagSpot:'Ask specifically whether the heating system has been serviced annually. A well-maintained older system can be a better sign than a newer one with no service history.'
+    },
+    {
+      id:'hcv-cooling-system', topic:'Cooling or air conditioning (if present)', risk:'medium',
+      requirement:'Any cooling system should operate normally and show no signs of leaking or poor maintenance.',
+      lookFor:['Water staining below indoor cooling units','Unusual noise or weak airflow','Visible corrosion on outdoor condenser units'],
+      howTo:['Test the cooling system if the season and circumstances allow','Check the outdoor unit for general condition and secure mounting']
+    },
+    {
+      id:'hcv-ventilation', topic:'General ventilation', risk:'medium',
+      requirement:'The property should have adequate ventilation to prevent condensation and stale air build-up.',
+      lookFor:['Rooms with no openable window and no mechanical ventilation','A stuffy or stale feeling in enclosed rooms'],
+      howTo:['Note any room without a window or extractor fan, particularly bathrooms and internal kitchens']
+    },
+    {
+      id:'hcv-ductwork', topic:'Visible ductwork (if applicable)', risk:'low',
+      requirement:'Visible ductwork should be intact, properly connected and reasonably clean.',
+      lookFor:['Disconnected or damaged duct sections','Heavy dust or debris buildup at visible vents'],
+      howTo:['Check accessible vents and any visible ductwork in a loft, basement or utility space']
+    },
+    {
+      id:'hcv-fuel-source', topic:'Fuel source and supply', risk:'medium',
+      requirement:'The buyer should understand the fuel source for heating, and any associated tank, meter or supply arrangement.',
+      lookFor:['An external fuel tank and its visible condition, if the property uses one','Gas meter location and condition, if applicable'],
+      howTo:['Ask what fuel type is used for heating and hot water, and confirm ongoing supply arrangements']
+    }
+  ]
+},
+{
+  id:'documentation', name:'Documentation / Property History',
+  intro:'Paperwork and history do not require any physical inspection, but they often reveal more than a walk-through ever could.',
+  checks:[
+    {
+      id:'doc-past-repairs', topic:'Past repair and renovation records', risk:'medium',
+      requirement:'The buyer should ask for and review any available documentation of past repairs or renovations.',
+      lookFor:['Availability of invoices, permits or warranties for major work'],
+      howTo:['Ask the seller or agent directly for any documentation of renovations, extensions or major repairs'],
+      snagSpot:'Ask specifically about past insurance claims. They often reveal issues that a casual viewing never would.'
+    },
+    {
+      id:'doc-permits', topic:'Permits and approvals for alterations', risk:'high',
+      requirement:'Any structural alteration, extension or significant change should have appropriate permits or approvals.',
+      lookFor:['Extensions or conversions that seem to lack matching documentation'],
+      howTo:['Ask whether any extensions, conversions or structural changes were completed with the required permits','Ask your conveyancer or legal representative to verify permit status as part of the purchase process']
+    },
+    {
+      id:'doc-warranties', topic:'Active warranties and guarantees', risk:'low',
+      requirement:'Any transferable warranty on the roof, appliances, damp-proofing or similar work should be identified.',
+      lookFor:['Warranty documents for major systems or past remedial work'],
+      howTo:['Ask specifically whether any warranties are transferable to a new owner and what they cover']
+    },
+    {
+      id:'doc-utilities', topic:'Utility and service history', risk:'low',
+      requirement:'The buyer should have a general understanding of utility costs and any unusual service history.',
+      lookFor:['Recent utility bills or average cost information, if the seller is willing to share them'],
+      howTo:['Ask for recent utility bills as a general guide to running costs']
+    },
+    {
+      id:'doc-boundaries', topic:'Boundary and title records', risk:'medium',
+      requirement:'Property boundaries as understood on-site should match official records.',
+      lookFor:['Fences or walls that appear inconsistent with the described boundary'],
+      howTo:['This is primarily a legal and conveyancing matter, raise any boundary uncertainty with your legal representative rather than resolving it yourself on-site']
+    }
+  ]
+},
+{
+  id:'general-condition', name:'General Condition',
+  intro:'A final, holistic pass across the whole property, capturing overall impressions that do not fit neatly into a single category above.',
+  checks:[
+    {
+      id:'gen-maintenance-pattern', topic:'Overall maintenance pattern', risk:'medium',
+      requirement:'The buyer should form an overall impression of whether the property has been consistently maintained or only superficially prepared for sale.',
+      lookFor:['A consistent standard of care across all areas, versus obvious focus only on visible, sellable spaces','Neglected areas such as a garage, loft or utility space that contrast with a freshly presented main living area'],
+      howTo:['Compare the condition of prominent rooms against less visible spaces like utility areas, garages and lofts'],
+      snagSpot:'A property that looks immaculate in the living areas but neglected in the garage or loft is a pattern worth noticing. Maintenance is rarely selective by room.'
+    },
+    {
+      id:'gen-odours', topic:'General odours', risk:'low',
+      requirement:'Beyond the specific damp and mould checks, the property should have no persistent unusual odour.',
+      lookFor:['Strong air freshener or scented candle use, which can sometimes mask an underlying smell','Any odour that seems inconsistent with a clean, well-ventilated home'],
+      howTo:['Notice whether strong fragrance is present throughout the viewing, and consider asking to revisit without advance notice if concerned']
+    },
+    {
+      id:'gen-diy-quality', topic:'Quality of DIY or owner-completed work', risk:'medium',
+      requirement:'Any visible owner-completed work should be functional and reasonably finished, without shortcuts that create hidden risk.',
+      lookFor:['Uneven tiling, gaps, or visibly amateur finishing in visible work','Mismatched materials suggesting a partial, unfinished project'],
+      howTo:['Look closely at finish quality in kitchens, bathrooms and any obviously renovated area']
+    },
+    {
+      id:'gen-appliances', topic:'Included appliances and fittings', risk:'low',
+      requirement:'The buyer should have written clarity on which appliances and fittings are included in the sale.',
+      lookFor:['Verbal assurances about what is included, without written confirmation'],
+      howTo:['Get a written list from the seller or agent of every appliance and fitting included in the sale price']
+    },
+    {
+      id:'gen-overall-impression', topic:'Overall buyer impression', risk:'low',
+      requirement:'A closing space to record your own overall impression after completing the screening.',
+      lookFor:['Your own gut sense after completing the full screening, weighed against what you actually documented rather than first impressions alone'],
+      howTo:['Use the observation field to summarise your overall impression once every other section has been completed']
+    }
+  ]
+}
+];
+
+/* =========================================================
+   CONTENT: FREE 10-POINT BLIND SPOT CHECK
+   One question at a time. Options mirror real buyer behaviour,
+   not a generic 1-5 scale. Immediate inline feedback with a
+   Snag Spot insight before the next question.
+   ========================================================= */
+const BLIND_SPOT_CHECK = [
+  {
+    id:'bs1', topic:'Fresh paint or patch repairs',
+    lookFor:'Look at walls and ceilings for small patches of paint that look newer or a slightly different shade than the surrounding surface.',
+    options:[
+      {label:'I noticed a patch or fresher paint area', found:true},
+      {label:'Walls and ceilings look uniform throughout', found:false},
+      {label:"I didn't check the walls closely", found:true}
+    ],
+    foundFeedback:'A small, isolated repair is often nothing. But a fresh patch can also be covering a past leak, crack or damp mark that was never actually fixed.',
+    clearFeedback:'Good sign. Consistent, even surfaces suggest no recent patch repairs are being hidden.',
+    snagSpot:'A fresh cosmetic repair can conceal an older defect. Ask when and why the area was repainted or patched.'
+  },
+  {
+    id:'bs2', topic:'Musty or damp smell',
+    lookFor:'Stand in each main room, especially bathrooms, kitchens and any lower-level or basement space, and notice the smell.',
+    options:[
+      {label:'I noticed a musty, damp or mouldy smell', found:true},
+      {label:'No unusual smell in any room', found:false},
+      {label:"I didn't pay attention to smell", found:true}
+    ],
+    foundFeedback:'A musty smell can indicate moisture that is not visible yet, for example inside a wall cavity or under flooring.',
+    clearFeedback:'A property with no musty smell during a dry viewing is a reasonable sign, though it is worth re-checking after rain if possible.',
+    snagSpot:'A musty smell may indicate moisture problems that are not immediately visible. Trust your nose as much as your eyes.'
+  },
+  {
+    id:'bs3', topic:'Wall and ceiling cracks',
+    lookFor:'Look at corners of walls, above doorways and windows, and where walls meet ceilings, for any visible cracks.',
+    options:[
+      {label:'I saw one or more cracks', found:true},
+      {label:'No visible cracks noticed', found:false},
+      {label:"I saw cracks but didn't look closely at them", found:true}
+    ],
+    foundFeedback:'Not all cracks are serious, but a crack should never be judged on appearance alone. Its location, width, direction and whether it continues through the wall thickness all matter.',
+    clearFeedback:'No visible cracking is a good sign, but check again in strong side-lighting, which reveals hairline cracks more easily.',
+    snagSpot:'Cracks should not be judged only by appearance. Location, pattern, movement and any doors or windows that no longer close squarely nearby are what matter.'
+  },
+  {
+    id:'bs4', topic:'Drainage and grading around the property',
+    lookFor:'Look at the ground immediately around the outside walls. Notice whether it slopes away from the building or towards it.',
+    options:[
+      {label:'Ground appeared to slope towards the building, or water pooling was visible', found:true},
+      {label:'Ground slopes away from the building, no pooling seen', found:false},
+      {label:"I didn't check outside during or after rain", found:true}
+    ],
+    foundFeedback:'Ground that slopes towards a building, or visible pooling, can direct water at the foundation over time.',
+    clearFeedback:'Good drainage away from the building is one of the simplest and most useful things a buyer can check for themselves.',
+    snagSpot:'Drainage is best judged during or shortly after rainfall. A dry-weather viewing can hide a real drainage problem.'
+  },
+  {
+    id:'bs5', topic:'Roof and loft signs',
+    lookFor:'From outside, look at the roof line for sagging or missing material. If loft access is available, look for water stains, damp insulation or daylight through the roof.',
+    options:[
+      {label:'I noticed staining, sagging, damaged material or daylight', found:true},
+      {label:'Roof and loft appeared sound, no issues seen', found:false},
+      {label:"I couldn't see the roof or loft properly", found:true}
+    ],
+    foundFeedback:'Roof and loft issues are one of the more expensive categories of repair, so early signs are worth documenting carefully.',
+    clearFeedback:'A roof with no visible staining, sagging or damage from a reasonable vantage point is a positive early sign.',
+    snagSpot:'Roof and loft observations should include signs of leaks, moisture, damaged materials, pests or inadequate ventilation, not just obvious holes.'
+  },
+  {
+    id:'bs6', topic:'Electrical warning signs',
+    lookFor:'Look at visible outlets, switches and the area around the electrical panel for scorch marks, warm covers, or a burning smell.',
+    options:[
+      {label:'I noticed a warning sign such as scorch marks or a burning smell', found:true},
+      {label:'No visible warning signs noticed', found:false},
+      {label:"I didn't look at the electrics", found:true}
+    ],
+    foundFeedback:'Any scorch mark, unusual smell, or heat around electrical fittings is a reason to have a qualified electrician assess the system before proceeding, never to investigate it yourself.',
+    clearFeedback:'No visible warning signs is reassuring, though a home this age or type may still benefit from a professional electrical assessment.',
+    snagSpot:'Electrical concerns should stay limited to observable warning signs. Never open a panel or test wiring yourself, that is a job for a qualified electrician.'
+  },
+  {
+    id:'bs7', topic:'Doors and windows that stick or don’t close squarely',
+    lookFor:'Try opening and closing a few interior doors and windows. Notice if any stick, drag on the frame, or leave a visible gap on one side.',
+    options:[
+      {label:'One or more doors or windows stuck or didn’t close squarely', found:true},
+      {label:'Doors and windows opened and closed normally', found:false},
+      {label:"I didn't try any doors or windows", found:true}
+    ],
+    foundFeedback:'An isolated sticking door is often just seasonal movement or a loose hinge. Several doors or windows doing this in the same part of the house can point to structural movement worth asking about.',
+    clearFeedback:'Doors and windows operating normally is a small but genuinely useful positive sign.',
+    snagSpot:'One sticking door rarely means much on its own. A pattern across several openings in the same area is the real signal.'
+  },
+  {
+    id:'bs8', topic:'Water stains on ceilings or walls',
+    lookFor:'Look up and around, especially under bathrooms, near chimneys, and below any roof valleys or flat roof sections, for brown or yellow staining.',
+    options:[
+      {label:'I noticed staining consistent with a past or current leak', found:true},
+      {label:'No staining noticed', found:false},
+      {label:"I didn't check ceilings closely", found:true}
+    ],
+    foundFeedback:'A stain does not always mean an active leak, it may be from a repaired issue. Either way it is worth asking directly when it occurred and what was done about it.',
+    clearFeedback:'No visible staining is a good sign, particularly directly beneath bathrooms and roof valleys where leaks show up first.',
+    snagSpot:'A stain with fresh paint immediately around it, but not beyond it, often means a leak was covered rather than fixed.'
+  },
+  {
+    id:'bs9', topic:'Pest signs',
+    lookFor:'Look along skirting boards, in cupboards, roof spaces and any wood structures for droppings, gnaw marks, damaged wood or nests.',
+    options:[
+      {label:'I noticed droppings, damage or nest signs', found:true},
+      {label:'No signs of pests noticed', found:false},
+      {label:"I didn't check for pest signs", found:true}
+    ],
+    foundFeedback:'Pest activity ranges from minor to structurally significant, for example with wood-boring insects. A specialist inspection can confirm the extent.',
+    clearFeedback:'No visible pest activity is a positive early sign, though it does not rule out activity in inaccessible areas.',
+    snagSpot:'Wood that sounds hollow when lightly tapped, in structural areas, is worth flagging for a specialist, not testing further yourself.'
+  },
+  {
+    id:'bs10', topic:'Property history and documentation',
+    lookFor:'Ask the seller or agent whether there are any records of past repairs, renovations, insurance claims, or known issues with the property.',
+    options:[
+      {label:'No documentation was offered, or my questions were deflected', found:true},
+      {label:'Clear documentation and straight answers were provided', found:false},
+      {label:"I didn't ask about property history", found:true}
+    ],
+    foundFeedback:'A seller who cannot or will not provide basic history is not proof of a problem, but it does mean more of your own verification is needed before proceeding.',
+    clearFeedback:'Clear documentation and straight answers are a genuinely good sign and worth keeping copies of for your own records.',
+    snagSpot:'Ask specifically about past insurance claims. They often reveal issues that a casual viewing never would.'
+  }
+];
+
+/* =========================================================
+   RENDER: SHELL
+   ========================================================= */
+let currentView = 'welcome';
+
+function render(){
+  ensureProperty();
+  if(backfillFindingIds(getActiveProperty())) saveStore({quiet:true});
+  document.body.setAttribute('data-theme', store.theme === 'dark' ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = store.theme === 'dark' ? 'Dark' : 'Light';
+  renderPropertyPicker();
+  renderNav();
+  renderView();
+  renderDashboardFloat();
+}
+
+function renderPropertyPicker(){
+  const sel = document.getElementById('propertySelect');
+  sel.innerHTML = store.properties.map(p =>
+    `<option value="${p.id}" ${p.id===store.activePropertyId?'selected':''}>${escapeHtml(p.name)}</option>`
+  ).join('');
+  sel.onchange = () => { store.activePropertyId = sel.value; saveStore(); render(); };
+}
+
+function sectionStats(sectionId){
+  const prop = getActiveProperty();
+  const section = SECTIONS.find(s=>s.id===sectionId);
+  if(!prop || !section) return {total:0, closed:0};
+  const total = section.checks.length;
+  let closed = 0;
+  section.checks.forEach(c=>{
+    const st = prop.checks[sectionId] && prop.checks[sectionId][c.id];
+    if(st && st.status === 'closed') closed++;
+  });
+  return {total, closed};
+}
+
+function renderNav(){
+  const nav = document.getElementById('sectionNav');
+  const prop = getActiveProperty();
+  let html = '';
+
+  html += `<div class="group-label">Start here</div>`;
+  html += navItem('welcome', 'Welcome', currentView==='welcome');
+  html += navItem('blindspot', '5-Minute Blind Spot Check', currentView==='blindspot', prop && prop.blindSpot.completed ? 'done' : '');
+
+  html += `<div class="group-label">Dashboard</div>`;
+  html += navItem('__dashboard', 'Inspection Dashboard (floating)', false);
+
+  html += `<div class="group-label">Full Inspection</div>`;
+  if(SECTIONS.length === 0){
+    html += `<div class="nav-item locked"><span class="label"><span class="dot"></span><span class="txt">Sections build in progress</span></span></div>`;
+  }
+  SECTIONS.forEach(s=>{
+    const stats = sectionStats(s.id);
+    const cls = stats.total>0 && stats.closed===stats.total ? 'done' : (stats.closed>0 ? 'inprogress' : '');
+    html += navItem('section:'+s.id, s.name, currentView==='section:'+s.id, cls, `${stats.closed}/${stats.total}`);
+  });
+
+  html += `<div class="group-label">Wrap-up</div>`;
+  html += navItem('decision', 'Property Decision View', currentView==='decision');
+  html += navItem('data', 'Backup & Data', currentView==='data');
+
+  nav.innerHTML = html;
+  nav.querySelectorAll('.nav-item[data-view]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const v = el.getAttribute('data-view');
+      if(window.innerWidth<=860 && typeof closeMobileSidebar==='function') closeMobileSidebar();
+      if(v === '__dashboard'){ expandDashFloat(); return; }
+      currentView = v;
+      renderNav(); renderView();
+    });
+  });
+}
+function navItem(view, label, active, statusCls, count){
+  return `<div class="nav-item ${active?'active':''} ${statusCls||''}" data-view="${view}">
+    <span class="label"><span class="dot"></span><span class="txt">${escapeHtml(label)}</span></span>
+    ${count?`<span class="count">${count}</span>`:''}
+  </div>`;
+}
+
+function renderView(){
+  const root = document.getElementById('viewRoot');
+  const crumb = document.getElementById('crumb');
+  const title = document.getElementById('viewTitle');
+  root.innerHTML = '';
+
+  if(currentView === 'welcome'){ crumb.textContent='Welcome'; title.textContent='Pre-Home Inspection'; renderWelcome(root); }
+  else if(currentView === 'blindspot'){ crumb.textContent='Free Check'; title.textContent='5-Minute Blind Spot Check'; renderBlindSpot(root); }
+  else if(currentView === 'decision'){ crumb.textContent='Wrap-up'; title.textContent='Property Decision View'; renderDecision(root); }
+  else if(currentView === 'data'){ crumb.textContent='Wrap-up'; title.textContent='Backup & Data'; renderData(root); }
+  else if(currentView.startsWith('section:')){
+    const sid = currentView.split(':')[1];
+    const section = SECTIONS.find(s=>s.id===sid);
+    crumb.textContent='Full Inspection'; title.textContent = section ? section.name : 'Section';
+    renderSection(root, section);
+  }
+}
+
+/* ---------- Welcome ---------- */
+function renderWelcome(root){
+  const prop = getActiveProperty();
+  root.innerHTML = `
+    <div class="hero">
+      <div class="mark">The Snag Tag</div>
+      <h1>What could you be missing before you commit?</h1>
+      <p>This is not a checklist. It is a structured blind-spot screening system for buyers, built on practical HSE inspection discipline. It helps you notice what an ordinary walk-through misses, document it properly, and know when to bring in a professional, before you sign.</p>
+    </div>
+    <div class="panel" style="max-width:620px;margin:26px auto 0;text-align:center;">
+      <h3>Start with the free 5-minute check</h3>
+      <p style="color:var(--ink-soft);font-size:14px;">Ten quick, real observations. See what you notice, and what a fuller screening would catch that a casual viewing wouldn't.</p>
+      <button class="btn primary" style="margin-top:10px;" data-go="blindspot">Take the Blind Spot Check</button>
+      <div style="margin-top:14px;">
+        <button class="btn ghost small" id="skipToDash">Open the dashboard →</button>
+      </div>
+    </div>
+    <div class="panel" style="max-width:620px;margin:16px auto 0;">
+      <div class="ch-block">
+        <div class="lbl">Currently inspecting</div>
+        <div style="font-family:var(--serif);font-size:17px;">${prop ? escapeHtml(prop.name) : 'None yet'}</div>
+      </div>
+    </div>
+  `;
+  root.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click', ()=>{ currentView=b.getAttribute('data-go'); renderNav(); renderView(); }));
+  const skip = root.querySelector('#skipToDash');
+  if(skip) skip.addEventListener('click', expandDashFloat);
+}
+
+/* ---------- Blind Spot Check ---------- */
+let bsIndex = 0;
+let bsAwaitingNext = false;
+
+function renderBlindSpot(root){
+  bsIndex = 0;
+  bsAwaitingNext = false;
+  paintBlindSpot(root);
+}
+function restartBlindSpot(root){
+  const prop = getActiveProperty();
+  prop.blindSpot = { answers:{}, completed:false, foundCount:0 };
+  saveStore();
+  renderBlindSpot(root);
+}
+function paintBlindSpot(root){
+  const prop = getActiveProperty();
+  const total = BLIND_SPOT_CHECK.length;
+
+  if(bsIndex >= total){
+    const foundCount = Object.values(prop.blindSpot.answers).filter(a=>a.found).length;
+    prop.blindSpot.completed = true;
+    prop.blindSpot.foundCount = foundCount;
+    saveStore();
+    root.innerHTML = `
+      <div class="check-stage">
+        <div class="bs-result panel">
+          <div class="badge good" style="margin-bottom:14px;">All 10 checks completed</div>
+          <div class="big-num">${foundCount}<span style="font-size:28px;color:var(--ink-soft);"> / ${total}</span></div>
+          <div class="big-lbl">Checks that flagged something worth a closer look</div>
+          <p>This was only ten checks. A full Snag Tag pre-purchase screening covers every major risk area of the property, with a structured check for each one, so you're not relying on memory or luck to catch what matters.</p>
+          <button class="btn primary" id="bsContinue">Continue to the dashboard</button>
+          <div style="margin-top:12px;"><button class="btn ghost small" id="bsRestart">Retake the check</button></div>
+        </div>
+      </div>`;
+    root.querySelector('#bsContinue').addEventListener('click', ()=>{
+      currentView='welcome'; renderNav(); renderView();
+      expandDashFloat();
+    });
+    root.querySelector('#bsRestart').addEventListener('click', ()=> restartBlindSpot(root));
+    return;
+  }
+
+  const item = BLIND_SPOT_CHECK[bsIndex];
+  const answered = prop.blindSpot.answers[item.id];
+  bsAwaitingNext = false;
+
+  root.innerHTML = `
+    <div class="check-stage">
+      <div class="check-progress-row">
+        ${bsIndex>0?`<button class="btn ghost small" id="bsBack">← Back</button>`:`<span style="width:60px;"></span>`}
+        <span>${bsIndex+1} / ${total}</span>
+        <div class="progress-track"><div class="progress-fill" style="width:${(bsIndex/total)*100}%"></div></div>
+        <button class="btn ghost small" id="bsRestartTop" title="Start the check over">Restart</button>
+      </div>
+      <div class="bs-card">
+        <div class="num-tag">Check ${bsIndex+1}</div>
+        <h3>${escapeHtml(item.topic)}</h3>
+        <div class="look-for">${escapeHtml(item.lookFor)}</div>
+        <div class="bs-options" id="bsOptions">
+          ${item.options.map((o,i)=>`<button class="bs-opt" data-i="${i}">${escapeHtml(o.label)}</button>`).join('')}
+        </div>
+        <div id="bsFeedback"></div>
+      </div>
+    </div>
+  `;
+
+  if(bsIndex>0) document.getElementById('bsBack').addEventListener('click', ()=>{ bsIndex--; paintBlindSpot(root); });
+  document.getElementById('bsRestartTop').addEventListener('click', ()=> restartBlindSpot(root));
+
+  root.querySelectorAll('.bs-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(bsAwaitingNext) return;
+      const opt = item.options[parseInt(btn.getAttribute('data-i'))];
+      prop.blindSpot.answers[item.id] = { found: opt.found, label: opt.label };
+      saveStore();
+      bsAwaitingNext = true;
+      root.querySelectorAll('.bs-opt').forEach(b=>b.style.opacity = (b===btn?'1':'.45'));
+      const fb = document.getElementById('bsFeedback');
+      fb.innerHTML = `
+        <div class="bs-feedback ${opt.found?'found':'clear'}">
+          <div class="ft">${opt.found ? 'Worth a closer look' : 'Looks clear'}</div>
+          <div>${escapeHtml(opt.found ? item.foundFeedback : item.clearFeedback)}</div>
+          <div class="snagspot"><b>Snag Spot</b>${escapeHtml(item.snagSpot)}</div>
+          <div style="margin-top:14px;text-align:right;">
+            <button class="btn primary small" id="bsNext">${bsIndex+1<total?'Next check →':'See your results →'}</button>
+          </div>
+        </div>`;
+      document.getElementById('bsNext').addEventListener('click', ()=>{
+        bsIndex++; paintBlindSpot(root);
+      });
+    });
+  });
+}
+
+/* ---------- Floating Dashboard ---------- */
+function expandDashFloat(){
+  const panel = document.getElementById('dashFloat');
+  panel.classList.remove('collapsed');
+  document.body.classList.add('dash-expanded');
+  document.getElementById('dashToggle').textContent='◂';
+  store.dashboardOpen = true; saveStore();
+}
+function collapseDashFloat(){
+  const panel = document.getElementById('dashFloat');
+  panel.classList.add('collapsed');
+  document.body.classList.remove('dash-expanded');
+  document.getElementById('dashToggle').textContent='▸';
+  store.dashboardOpen = false; saveStore();
+}
+function initDashFloat(){
+  const panel = document.getElementById('dashFloat');
+  const btn = document.getElementById('dashToggle');
+  if(store.dashboardOpen){ panel.classList.remove('collapsed'); document.body.classList.add('dash-expanded'); btn.textContent='◂'; }
+  btn.addEventListener('click', ()=>{
+    if(panel.classList.contains('collapsed')) expandDashFloat();
+    else collapseDashFloat();
+  });
+}
+function renderDashboardFloat(){
+  const body = document.getElementById('dashFloatBody');
+  const prop = getActiveProperty();
+  if(!body || !prop) return;
+  let total=0, closed=0, critical=0, high=0, medium=0, low=0, followUps=0, evidence=0;
+
+  SECTIONS.forEach(s=>{
+    s.checks.forEach(c=>{
+      total++;
+      const st = prop.checks[s.id] && prop.checks[s.id][c.id];
+      if(st){
+        if(st.status==='closed') closed++;
+        if(st.professionalFollowUp) followUps++;
+        evidence += (st.evidence||[]).length;
+        if(st.status!=='closed' || st.professionalFollowUp){
+          if(c.risk==='critical') critical++;
+          else if(c.risk==='high') high++;
+          else if(c.risk==='medium') medium++;
+          else if(c.risk==='low') low++;
+        }
+      }
+    });
+  });
+
+  body.innerHTML = `
+    ${SECTIONS.length===0?`<div class="build-banner" style="font-size:10.5px;">Full inspection sections build in progress. Dashboard and free check are fully working.</div>`:''}
+    <div class="ch-block" style="margin-bottom:12px;">
+      <div class="lbl">Property</div>
+      <div style="font-family:var(--serif);font-size:15px;">${escapeHtml(prop.name)}</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-tile"><div class="num">${total}</div><div class="lbl">Total checks</div></div>
+      <div class="stat-tile good"><div class="num">${closed}</div><div class="lbl">Completed</div></div>
+      <div class="stat-tile"><div class="num">${total-closed}</div><div class="lbl">Open</div></div>
+      <div class="stat-tile critical"><div class="num">${critical}</div><div class="lbl">Critical</div></div>
+      <div class="stat-tile high"><div class="num">${high}</div><div class="lbl">High risk</div></div>
+      <div class="stat-tile medium"><div class="num">${medium}</div><div class="lbl">Medium risk</div></div>
+      <div class="stat-tile low"><div class="num">${low}</div><div class="lbl">Low risk</div></div>
+      <div class="stat-tile"><div class="num">${followUps}</div><div class="lbl">Follow-ups</div></div>
+      <div class="stat-tile"><div class="num">${evidence}</div><div class="lbl">Evidence</div></div>
+    </div>
+    <div class="panel" style="margin-top:10px;">
+      <div class="ch-block">
+        <div class="lbl">Overall progress</div>
+        <div class="progress-track" style="margin-top:6px;"><div class="progress-fill" style="width:${total?Math.round(closed/total*100):0}%"></div></div>
+        <div style="font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:6px;">${total?Math.round(closed/total*100):0}% complete</div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px;">
+      <div class="lbl" style="margin-bottom:4px;">Free check result</div>
+      ${prop.blindSpot.completed
+        ? `<p style="color:var(--ink-soft);font-size:13px;margin:0;">${prop.blindSpot.foundCount} / ${BLIND_SPOT_CHECK.length} checks flagged something worth a closer look.</p>`
+        : `<p style="color:var(--ink-soft);font-size:13px;margin:0;"><a href="#" data-go="blindspot" style="color:var(--accent);">Take the 5-minute Blind Spot Check →</a></p>`}
+    </div>
+  `;
+  const link = body.querySelector('[data-go]');
+  if(link) link.addEventListener('click', (e)=>{ e.preventDefault(); currentView='blindspot'; renderNav(); renderView(); });
+}
+
+/* ---------- Section (full inspection checks) ---------- */
+const sectionFilters = {};
+function getSectionFilter(sectionId){
+  if(!sectionFilters[sectionId]) sectionFilters[sectionId] = {status:'all', risk:'all', followUp:false, q:''};
+  return sectionFilters[sectionId];
+}
+function renderSection(root, section){
+  if(!section){
+    root.innerHTML = `<div class="locked-panel"><div class="mark">Coming in the next build phase</div><h3>This section is not built yet</h3><p>Inspection sections are being added in stages. Your dashboard, property setup and the free Blind Spot Check are fully functional now.</p></div>`;
+    return;
+  }
+  const prop = getActiveProperty();
+  const filter = getSectionFilter(section.id);
+
+  const matches = (c, st) => {
+    if(filter.status!=='all' && st.status!==filter.status) return false;
+    if(filter.risk!=='all' && c.risk!==filter.risk) return false;
+    if(filter.followUp && !st.professionalFollowUp) return false;
+    if(filter.q && !c.topic.toLowerCase().includes(filter.q.toLowerCase())) return false;
+    return true;
+  };
+
+  let html = `<div class="section-head"><h3>${escapeHtml(section.name)}</h3><div class="intro">${escapeHtml(section.intro||'')}</div></div>`;
+  html += `
+    <div class="panel" style="padding:12px 14px;margin-bottom:14px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+        <div class="field" style="flex:1;min-width:160px;">
+          <label>Search this section</label>
+          <input type="text" id="secSearch" value="${escapeAttr(filter.q)}" placeholder="Search by topic...">
+        </div>
+        <div class="field" style="min-width:130px;">
+          <label>Status</label>
+          <select id="secStatus">
+            <option value="all" ${filter.status==='all'?'selected':''}>All</option>
+            <option value="open" ${filter.status==='open'?'selected':''}>Open</option>
+            <option value="in-progress" ${filter.status==='in-progress'?'selected':''}>In progress</option>
+            <option value="closed" ${filter.status==='closed'?'selected':''}>Closed</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:130px;">
+          <label>Risk</label>
+          <select id="secRisk">
+            <option value="all" ${filter.risk==='all'?'selected':''}>All</option>
+            <option value="critical" ${filter.risk==='critical'?'selected':''}>Critical</option>
+            <option value="high" ${filter.risk==='high'?'selected':''}>High</option>
+            <option value="medium" ${filter.risk==='medium'?'selected':''}>Medium</option>
+            <option value="low" ${filter.risk==='low'?'selected':''}>Low</option>
+          </select>
+        </div>
+        <div class="field checkbox" style="margin-top:8px;">
+          <input type="checkbox" id="secFollowUp" ${filter.followUp?'checked':''}>
+          <label style="margin:0;">Follow-up only</label>
+        </div>
+        <button class="btn ghost small" id="secReset" title="Clear every answer in this section" style="margin-left:auto;">Reset section</button>
+      </div>
+    </div>
+  `;
+
+  const visible = section.checks.filter(c => matches(c, getCheckState(section.id, c.id)));
+  if(!visible.length){
+    html += `<p style="color:var(--ink-soft);font-size:13.5px;">No checks match your current filter.</p>`;
+  }
+  visible.forEach(c=>{
+    const st = getCheckState(section.id, c.id);
+    html += renderCheckCard(section.id, c, st);
+  });
+  root.innerHTML = html;
+  wireCheckCards(root, section);
+
+  root.querySelector('#secSearch').addEventListener('input', (e)=>{
+    filter.q=e.target.value;
+    const caret = e.target.selectionStart;
+    renderSection(root, section);
+    const el = root.querySelector('#secSearch');
+    el.focus();
+    el.setSelectionRange(caret, caret);
+  });
+  root.querySelector('#secStatus').addEventListener('change', (e)=>{ filter.status=e.target.value; renderSection(root, section); });
+  root.querySelector('#secRisk').addEventListener('change', (e)=>{ filter.risk=e.target.value; renderSection(root, section); });
+  root.querySelector('#secFollowUp').addEventListener('change', (e)=>{ filter.followUp=e.target.checked; renderSection(root, section); });
+  root.querySelector('#secReset').addEventListener('click', ()=>{
+    if(!confirm('Reset all answers in the '+section.name+' section? This clears status, observations, evidence and follow-up notes for every check in this section only.')) return;
+    prop.checks[section.id] = {};
+    saveStore();
+    renderNav();
+    renderSection(root, section);
+    showToast(section.name+' section reset');
+  });
+}
+function renderCheckCard(sectionId, c, st){
+  return `
+  <div class="check-card" data-check="${c.id}">
+    <div class="ch-top">
+      <div>
+        <h4>${escapeHtml(c.topic)}</h4>
+        <div class="req">${escapeHtml(c.requirement)}</div>
+      </div>
+      <div class="ch-badges">
+        ${st.findingId?`<span class="badge neutral finding-id">${st.findingId}</span>`:''}
+        <span class="badge ${c.risk}">${c.risk}</span>
+        ${st.status==='closed'?'<span class="badge good">closed</span>':st.status==='in-progress'?'<span class="badge medium">in progress</span>':'<span class="badge neutral">open</span>'}
+      </div>
+    </div>
+    <div class="ch-grid">
+      <div class="ch-block"><div class="lbl">What to look for</div><ul>${c.lookFor.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+      <div class="ch-block"><div class="lbl">How to check</div><ul>${c.howTo.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>
+    </div>
+    ${c.measurement?`<div class="ch-block" style="margin-top:10px;"><div class="lbl">Measurement / standard</div><span class="ch-measure">${escapeHtml(c.measurement)}</span></div>`:''}
+    ${c.snagSpot?`<div class="snagspot-box"><b>Snag Spot</b>${escapeHtml(c.snagSpot)}</div>`:''}
+
+    <div class="ch-fields">
+      <div class="ch-row">
+        <div class="field">
+          <label>Status</label>
+          <select data-f="status">
+            <option value="open" ${st.status==='open'?'selected':''}>Open</option>
+            <option value="in-progress" ${st.status==='in-progress'?'selected':''}>In progress</option>
+            <option value="closed" ${st.status==='closed'?'selected':''}>Closed</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Measurement / observed value (optional)</label>
+          <input type="text" data-f="measurement" value="${escapeAttr(st.measurement)}" placeholder="e.g. 3 mm (0.1 in) gap">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Location (room / exact spot)</label>
+        <input type="text" data-f="location" value="${escapeAttr(st.location||'')}" placeholder="e.g. Main bedroom, north wall, behind wardrobe">
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Observation</label>
+        <textarea data-f="observation" placeholder="What did you actually see, hear or smell?">${escapeHtml(st.observation)}</textarea>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Action required</label>
+        <textarea data-f="actionRequired" placeholder="What should happen next?">${escapeHtml(st.actionRequired)}</textarea>
+      </div>
+      <div class="field checkbox">
+        <input type="checkbox" data-f="professionalFollowUp" ${st.professionalFollowUp?'checked':''}>
+        <label style="margin:0;">Needs professional follow-up</label>
+      </div>
+      ${st.professionalFollowUp?`<div class="field" style="margin-top:8px;"><label>Follow-up notes</label><textarea data-f="followUpNotes" placeholder="Who should assess this, and why">${escapeHtml(st.followUpNotes)}</textarea></div>`:''}
+
+      <div class="ch-block" style="margin-top:12px;">
+        <div class="lbl">Evidence</div>
+        <div class="evidence-row" data-evidence>
+          ${(st.evidence||[]).map((e,i)=>`<div class="evidence-thumb"><img src="${e}" alt="${escapeAttr((st.findingId||'Evidence')+' photo '+(i+1))}"><button class="rm" data-rm="${i}" aria-label="Remove photo">×</button></div>`).join('')}
+          <label class="evidence-add" title="Add photos">+<input type="file" accept="image/*" multiple hidden data-add-evidence></label>
+        </div>
+        <div class="evidence-hint">Photos are resized to save space and stay on this device only.</div>
+      </div>
+    </div>
+  </div>`;
+}
+function wireCheckCards(root, section){
+  root.querySelectorAll('.check-card').forEach(card=>{
+    const checkId = card.getAttribute('data-check');
+    const st = getCheckState(section.id, checkId);
+    card.querySelectorAll('[data-f]').forEach(el=>{
+      const f = el.getAttribute('data-f');
+      const evt = (el.type==='checkbox') ? 'change' : 'input';
+      el.addEventListener(evt, ()=>{
+        st[f] = el.type==='checkbox' ? el.checked : el.value;
+        st.updatedAt = new Date().toISOString();
+        const newId = ensureFindingId(getActiveProperty(), st);
+        saveStore();
+        if(f==='status' || f==='professionalFollowUp'){ renderNav(); renderSection(root, section); }
+        else if(newId){
+          const badges = card.querySelector('.ch-badges');
+          if(badges && !badges.querySelector('.finding-id')) badges.insertAdjacentHTML('afterbegin', `<span class="badge neutral finding-id">${st.findingId}</span>`);
+        }
+      });
+    });
+    card.querySelectorAll('[data-add-evidence]').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        const files = Array.from(inp.files || []);
+        if(!files.length) return;
+        let added = 0, unreadable = 0, full = false;
+        const next = (i)=>{
+          if(i >= files.length || full){
+            renderSection(root, section);
+            if(full) showToast(added ? `${added} photo(s) added. Storage is full - export a backup, then remove some photos.` : 'Photo not saved - your browser storage is full. Export a backup, then remove some photos.');
+            else if(unreadable && !added) showToast('That image could not be read. Try a JPG or PNG photo.');
+            else if(unreadable) showToast(`${added} photo(s) added. ${unreadable} could not be read.`);
+            else showToast(added===1 ? 'Photo added' : `${added} photos added`);
+            return;
+          }
+          compressImageFile(files[i], (url)=>{
+            if(!url){ unreadable++; next(i+1); return; }
+            st.evidence = st.evidence || [];
+            st.evidence.push(url);
+            st.updatedAt = new Date().toISOString();
+            ensureFindingId(getActiveProperty(), st);
+            if(saveStore({quiet:true})){ added++; }
+            else { st.evidence.pop(); saveStore({quiet:true}); full = true; }
+            next(i+1);
+          });
+        };
+        next(0);
+        inp.value = '';
+      });
+    });
+    card.querySelectorAll('[data-rm]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-rm'));
+        st.evidence.splice(i,1);
+        saveStore();
+        renderSection(root, section);
+      });
+    });
+  });
+}
+
+/* ---------- Property Decision View ---------- */
+function collectFindings(prop){
+  const positive=[], open=[], highPriority=[], followUps=[], evidenceItems=[], actions=[];
+  SECTIONS.forEach(sec=>{
+    sec.checks.forEach(c=>{
+      const st = prop.checks[sec.id] && prop.checks[sec.id][c.id];
+      if(!st) return;
+      if(!isTouched(st)) return;
+
+      const entry = { findingId: st.findingId||'', sectionName: sec.name, sectionId: sec.id, checkId: c.id, topic: c.topic, risk: c.risk, requirement: c.requirement, status: st.status, location: st.location||'', measurement: st.measurement||'', observation: st.observation, actionRequired: st.actionRequired, followUpNotes: st.followUpNotes, updatedAt: st.updatedAt };
+
+      if(st.status==='closed' && !st.professionalFollowUp){ positive.push(entry); }
+      if(st.status!=='closed'){ open.push(entry); }
+      if((c.risk==='critical'||c.risk==='high') && (st.status!=='closed' || st.professionalFollowUp)){ highPriority.push(entry); }
+      if(st.professionalFollowUp){ followUps.push(entry); }
+      if(st.actionRequired && st.actionRequired.trim()){ actions.push(entry); }
+      if(st.evidence && st.evidence.length){ evidenceItems.push(Object.assign({}, entry, {evidence: st.evidence})); }
+    });
+  });
+  return {positive, open, highPriority, followUps, evidenceItems, actions};
+}
+
+function renderDecision(root){
+  const prop = getActiveProperty();
+  const f = collectFindings(prop);
+
+  const findingRow = (e) => `
+    <div class="check-card" style="padding:14px 16px;margin-bottom:10px;">
+      <div class="ch-top" style="margin-bottom:0;">
+        <div>
+          <div style="font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;">${e.findingId?`<b style="color:var(--accent);">${escapeHtml(e.findingId)}</b> · `:''}${escapeHtml(e.sectionName)}</div>
+          <h4 style="margin:2px 0 0;font-size:15px;">${escapeHtml(e.topic)}</h4>
+        </div>
+        <span class="badge ${e.risk}">${e.risk}</span>
+      </div>
+      ${e.location?`<div style="font-size:13px;margin-top:8px;"><b>Location:</b> ${escapeHtml(e.location)}</div>`:''}
+      ${e.measurement?`<div style="font-size:13px;margin-top:4px;"><b>Measured:</b> ${escapeHtml(e.measurement)}</div>`:''}
+      ${e.observation?`<div style="font-size:13.5px;color:var(--ink-soft);margin-top:8px;">${escapeHtml(e.observation)}</div>`:''}
+      ${e.actionRequired?`<div style="font-size:13px;margin-top:6px;"><b style="color:var(--accent);">Action:</b> ${escapeHtml(e.actionRequired)}</div>`:''}
+      ${e.followUpNotes?`<div style="font-size:13px;margin-top:6px;"><b style="color:var(--accent);">Follow-up:</b> ${escapeHtml(e.followUpNotes)}</div>`:''}
+    </div>`;
+
+  const emptyNote = (label) => `<p style="color:var(--ink-soft);font-size:13.5px;">No ${label} recorded yet. Work through the Full Inspection sections to build this out.</p>`;
+
+  const questions = f.open.concat(f.followUps).filter((v,i,arr)=>arr.findIndex(x=>x.checkId===v.checkId&&x.sectionId===v.sectionId)===i)
+    .slice(0,20)
+    .map(e=>`<li>${escapeHtml(e.topic)}: ${e.observation ? 'Can you tell me more about this, specifically ' + e.observation.toLowerCase().replace(/\.$/,'') + '?' : 'What can you tell me about the condition of this, and has it ever been an issue?'}</li>`)
+    .join('');
+
+  const actionList = f.actions.concat(f.followUps.filter(e=>!f.actions.find(a=>a.checkId===e.checkId&&a.sectionId===e.sectionId)))
+    .map(e=>`<li>${escapeHtml(e.sectionName)} - ${escapeHtml(e.topic)}${e.actionRequired?': '+escapeHtml(e.actionRequired):(e.followUpNotes?': '+escapeHtml(e.followUpNotes):'')}</li>`)
+    .join('');
+
+  root.innerHTML = `
+    <div class="print-only print-head">
+      <div class="mark">The Snag Tag · Pre-Home Inspection</div>
+      <div>Buyer screening record printed ${escapeHtml(new Date().toLocaleDateString())}</div>
+    </div>
+    <div class="section-head" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+      <div>
+        <h3>Property Decision View</h3>
+        <div class="intro">A summary of what your screening found. Use it to guide further investigation and professional assessment, not as a final verdict.</div>
+      </div>
+      <button class="btn primary small no-print" id="printReportBtn">Print / Save as PDF</button>
+    </div>
+
+    <div class="panel">
+      <h4>Property snapshot</h4>
+      <div class="ch-grid">
+        <div class="ch-block"><div class="lbl">Property</div><div>${escapeHtml(prop.name)}</div></div>
+        <div class="ch-block"><div class="lbl">Address</div><div>${prop.address?escapeHtml(prop.address):'Not recorded'}</div></div>
+        <div class="ch-block"><div class="lbl">Buyer</div><div>${prop.buyerName?escapeHtml(prop.buyerName):'Not recorded'}</div></div>
+        <div class="ch-block"><div class="lbl">Inspection date</div><div>${escapeHtml(prop.inspectionDate)}</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>Positive findings <span class="badge good">${f.positive.length}</span></h4>
+      ${f.positive.length? f.positive.map(findingRow).join('') : emptyNote('positive findings')}
+    </div>
+
+    <div class="panel">
+      <h4>Open findings <span class="badge neutral">${f.open.length}</span></h4>
+      ${f.open.length? f.open.map(findingRow).join('') : emptyNote('open findings')}
+    </div>
+
+    <div class="panel">
+      <h4>High-priority findings <span class="badge high">${f.highPriority.length}</span></h4>
+      ${f.highPriority.length? f.highPriority.map(findingRow).join('') : emptyNote('high-priority findings')}
+    </div>
+
+    <div class="panel">
+      <h4>Professional follow-up <span class="badge medium">${f.followUps.length}</span></h4>
+      ${f.followUps.length? f.followUps.map(findingRow).join('') : emptyNote('professional follow-ups')}
+    </div>
+
+    <div class="panel">
+      <h4>Evidence register <span class="badge neutral">${f.evidenceItems.length}</span></h4>
+      ${f.evidenceItems.length? f.evidenceItems.map(e=>`
+        <div style="margin-bottom:12px;">
+          <div style="font-size:13.5px;margin-bottom:6px;">${e.findingId?`<b style="color:var(--accent);font-family:var(--mono);">${escapeHtml(e.findingId)}</b> - `:''}<b>${escapeHtml(e.sectionName)}</b> - ${escapeHtml(e.topic)}${e.location?` <span style="color:var(--ink-soft);">(${escapeHtml(e.location)})</span>`:''}</div>
+          <div class="evidence-row report-photos">${e.evidence.map((ev,i)=>`<figure class="evidence-thumb"><img src="${ev}" alt="${escapeAttr((e.findingId||'Evidence')+' photo '+(i+1))}"><figcaption>${escapeHtml((e.findingId||'Photo')+' / '+(i+1))}</figcaption></figure>`).join('')}</div>
+        </div>`).join('') : emptyNote('evidence')}
+    </div>
+
+    <div class="panel">
+      <h4>Questions for the seller / agent</h4>
+      ${questions? `<ul style="margin:0;padding-left:20px;font-size:13.5px;">${questions}</ul>` : emptyNote('generated questions')}
+    </div>
+
+    <div class="panel">
+      <h4>Pre-purchase action list</h4>
+      ${actionList? `<ul style="margin:0;padding-left:20px;font-size:13.5px;">${actionList}</ul>` : emptyNote('action items')}
+    </div>
+
+    <div class="panel no-print ai-panel">
+      <h4>Draft your report wording with AI <span class="badge neutral">optional</span></h4>
+      <p class="ai-intro">Copy a ready-made prompt built from your findings, paste it into Claude, ChatGPT or another AI assistant, then paste the reply back here. Your name and address are not included. Photos are only shared if you attach them yourself.</p>
+      <div class="ai-actions">
+        <button class="btn primary small" id="aiCopyBtn" ${aiFindings(prop).length?'':'disabled'}>Copy AI prompt</button>
+        <button class="btn small" id="aiShowBtn" ${aiFindings(prop).length?'':'disabled'}>Show prompt</button>
+      </div>
+      ${aiFindings(prop).length?'':'<p class="ai-note">Record at least one check first, then the prompt can be built.</p>'}
+      <textarea id="aiPromptPreview" class="ai-preview" readonly hidden></textarea>
+      <div class="field" style="margin-top:14px;">
+        <label>AI draft - review before use</label>
+        <textarea id="aiDraftText" class="ai-draft" placeholder="Paste the AI reply here. Check every line against what you actually saw.">${escapeHtml((prop.aiDraft&&prop.aiDraft.text)||'')}</textarea>
+      </div>
+      <div class="field checkbox">
+        <input type="checkbox" id="aiDraftPrint" ${(prop.aiDraft&&prop.aiDraft.include===false)?'':'checked'}>
+        <label style="margin:0;">Include this draft in the printed report (always marked as a draft)</label>
+      </div>
+      <p class="ai-note">AI can misread notes or add things that are not there. Edit or delete anything you did not observe.</p>
+    </div>
+
+    <div class="panel print-only ai-print" id="aiPrintBlock" ${aiPrintOn(prop)?'':'data-empty="1"'}>
+      <h4>AI-assisted draft wording <span class="badge medium">Draft - review before use</span></h4>
+      <div class="ai-print-text" id="aiPrintText">${escapeHtml((prop.aiDraft&&prop.aiDraft.text)||'')}</div>
+      <p class="ai-print-note">Drafted with an AI assistant from the buyer's own notes. It has not been checked by a professional and may contain errors.</p>
+    </div>
+
+    <div class="panel" style="background:var(--accent-soft);border-color:var(--accent);">
+      <p style="margin:0;color:var(--ink);font-size:13.5px;">These are the issues identified during your screening. Use them to guide further investigation and professional assessment before making your decision.</p>
+    </div>
+    <p class="print-only print-foot">This is a buyer-led screening record, not a professional building inspection. It does not confirm that the property is safe, sound or free of defects.</p>
+  `;
+  const pb = root.querySelector('#printReportBtn');
+  if(pb) pb.addEventListener('click', ()=>window.print());
+  wireAiPanel(root, prop);
+}
+
+/* ---------- AI draft helper (v1.2) ---------- */
+function aiPrintOn(prop){ return !!(prop && prop.aiDraft && prop.aiDraft.text && prop.aiDraft.text.trim() && prop.aiDraft.include!==false); }
+function syncAiPrint(root, prop){
+  const b = root.querySelector('#aiPrintBlock'), t = root.querySelector('#aiPrintText');
+  if(!b) return;
+  t.textContent = (prop.aiDraft && prop.aiDraft.text) || '';
+  if(aiPrintOn(prop)) b.removeAttribute('data-empty'); else b.setAttribute('data-empty','1');
+}
+function aiFindings(prop){
+  const out = [];
+  if(!prop) return out;
+  SECTIONS.forEach(sec=>sec.checks.forEach(c=>{
+    const st = prop.checks[sec.id] && prop.checks[sec.id][c.id];
+    if(st && isTouched(st)) out.push({sec, c, st});
+  }));
+  const num = id => parseInt(String(id||'').replace(/\D/g,''),10) || 9999;
+  return out.sort((a,b)=>num(a.st.findingId)-num(b.st.findingId));
+}
+function buildAiPrompt(prop){
+  const list = aiFindings(prop);
+  const total = SECTIONS.reduce((n,s)=>n+s.checks.length,0);
+  const clean = v => String(v||'').replace(/\s+/g,' ').trim();
+  const L = [];
+  L.push('You are helping a home buyer turn their own pre-purchase screening notes into clear report wording.');
+  L.push('');
+  L.push('RULES');
+  L.push('- Use only the findings below. Do not add new defects, causes or facts.');
+  L.push('- Describe what was observed. Do not diagnose causes. Where a cause is unclear, say it is not confirmed and name the type of qualified professional who could assess it (for example a structural engineer, electrician, plumber, roofer, damp specialist or pest professional).');
+  L.push('- Do not state or imply that anything meets or breaks a law, building code or standard, and do not quote regulations.');
+  L.push('- Do not tell the buyer whether to buy the property, and do not give repair cost estimates.');
+  L.push('- Keep every finding ID (for example PHI-001) exactly as given.');
+  L.push('- Keep measurements exactly as written. Do not convert or round them.');
+  L.push('- If photos are attached, describe only what is visible in them and say which finding ID each photo belongs to. Do not guess what is hidden.');
+  L.push('- Write in plain English for a non-expert. Use hyphens, never long dashes.');
+  L.push('- Start your reply with the line: DRAFT - review before use');
+  L.push('');
+  L.push('OUTPUT (plain text, no tables)');
+  L.push('1. Summary: 3 to 5 sentences.');
+  L.push('2. Findings: one short paragraph per finding ID covering what was observed, where, why it may matter and who could assess it.');
+  L.push('3. Questions for the seller or agent.');
+  L.push('4. Next steps before making a decision.');
+  L.push('');
+  L.push('FINDINGS');
+  L.push('Inspection date: ' + clean(prop.inspectionDate || 'not recorded'));
+  L.push('Checks recorded: ' + list.length + ' of ' + total);
+  list.forEach(({sec, c, st})=>{
+    L.push('');
+    L.push((st.findingId||'(no ID)') + ' | ' + sec.name + ' > ' + c.topic + ' | Risk level of this check: ' + c.risk + ' | Status: ' + (st.status||'open'));
+    if(clean(st.location)) L.push('Location: ' + clean(st.location));
+    if(clean(st.measurement)) L.push('Measured: ' + clean(st.measurement));
+    if(clean(st.observation)) L.push('Observation: ' + clean(st.observation));
+    if(clean(st.actionRequired)) L.push('Action noted: ' + clean(st.actionRequired));
+    if(st.professionalFollowUp) L.push('Professional follow-up: yes' + (clean(st.followUpNotes) ? ' - ' + clean(st.followUpNotes) : ''));
+    if(st.status==='closed' && !st.professionalFollowUp && !clean(st.observation)) L.push('Observation: checked, no concern recorded');
+    const ph = (st.evidence||[]).length;
+    if(ph) L.push('Photos taken: ' + ph + ' (labelled ' + (st.findingId||'') + ' / 1' + (ph>1 ? ' to ' + ph : '') + ' in the buyer\'s report)');
+  });
+  return L.join('\n');
+}
+function copyText(text){
+  if(navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(text).then(()=>true).catch(()=>legacyCopy(text));
+  }
+  return Promise.resolve(legacyCopy(text));
+}
+function legacyCopy(text){
+  try{
+    const t = document.createElement('textarea');
+    t.value = text; t.setAttribute('readonly',''); t.style.position='fixed'; t.style.opacity='0';
+    document.body.appendChild(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok;
+  }catch(e){ return false; }
+}
+function wireAiPanel(root, prop){
+  const copyBtn = root.querySelector('#aiCopyBtn'), showBtn = root.querySelector('#aiShowBtn');
+  const prev = root.querySelector('#aiPromptPreview'), draft = root.querySelector('#aiDraftText'), inc = root.querySelector('#aiDraftPrint');
+  if(!draft) return;
+  const ensure = ()=>{ prop.aiDraft = prop.aiDraft || { text:'', include:true, updatedAt:null }; return prop.aiDraft; };
+  if(copyBtn) copyBtn.addEventListener('click', ()=>{
+    const text = buildAiPrompt(prop);
+    copyText(text).then(ok=>{
+      if(ok) showToast('Prompt copied - paste it into your AI assistant');
+      else { prev.hidden = false; prev.value = text; prev.focus(); prev.select(); showToast('Copy was blocked - the prompt is selected below, copy it manually'); }
+    });
+  });
+  if(showBtn) showBtn.addEventListener('click', ()=>{
+    prev.hidden = !prev.hidden;
+    if(!prev.hidden) prev.value = buildAiPrompt(prop);
+    showBtn.textContent = prev.hidden ? 'Show prompt' : 'Hide prompt';
+  });
+  draft.addEventListener('input', ()=>{ const d = ensure(); d.text = draft.value; d.updatedAt = new Date().toISOString(); saveStore({quiet:true}); syncAiPrint(root, prop); });
+  draft.addEventListener('blur', ()=>{
+    const fixed = draft.value.replace(/[ \t]*[\u2014\u2013][ \t]*/g, ' - ');
+    if(fixed !== draft.value){ draft.value = fixed; const d = ensure(); d.text = fixed; showToast('Long dashes changed to hyphens'); }
+    if(prop.aiDraft) saveStore();
+    syncAiPrint(root, prop);
+  });
+  inc.addEventListener('change', ()=>{ const d = ensure(); d.include = inc.checked; saveStore(); syncAiPrint(root, prop); });
+}
+
+/* ---------- Backup & Data ---------- */
+function renderData(root){
+  root.innerHTML = `
+    <div class="panel">
+      <h3>Property details</h3>
+      ${propertyForm()}
+    </div>
+    <div class="panel">
+      <h3>Backup & recovery</h3>
+      <p style="color:var(--ink-soft);font-size:14px;">All of your inspection data, including photos, is stored only in this browser, on this device, using local storage. It is not uploaded anywhere. If you clear your browser data, reset your device, or open this file in a different browser, your records will not be there unless you have exported a backup first.</p>
+      <p style="color:var(--ink-soft);font-size:14px;">Export a backup file regularly, especially before closing your browser for the day, and keep a copy somewhere safe such as cloud storage or email.</p>
+      <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+        <button class="btn primary" id="exportBtn2">Export backup (.json)</button>
+        <button class="btn" id="importBtn2">Import backup</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Storage space</h3>
+      <p style="color:var(--ink-soft);font-size:14px;">About <b>${storageUsedMB().toFixed(1)} MB</b> of inspection data is saved in this browser. Most browsers allow roughly 5 MB per website, and other tools opened from the same website may share that space. Photos use the most.</p>
+      <p style="color:var(--ink-soft);font-size:14px;">Photos added in earlier versions may be full size. Make them smaller to free up space. Your photos stay readable, just lighter.</p>
+      <button class="btn" id="shrinkBtn" style="margin-top:6px;">Make existing photos smaller</button>
+    </div>
+    <div class="panel" style="border-color:var(--critical);">
+      <h3 style="color:var(--critical);">Delete this property</h3>
+      <p style="color:var(--ink-soft);font-size:14px;">This permanently removes this property and every check, observation and photo recorded against it from this browser. Export a backup first if you might want this data again.</p>
+      <button class="btn" id="deletePropBtn" style="border-color:var(--critical);color:var(--critical);">Delete property</button>
+    </div>
+  `;
+  root.querySelector('#exportBtn2').addEventListener('click', doExport);
+  root.querySelector('#shrinkBtn').addEventListener('click', ()=>shrinkAllPhotos(root));
+  root.querySelector('#importBtn2').addEventListener('click', ()=>document.getElementById('importFile').click());
+  root.querySelector('#deletePropBtn').addEventListener('click', ()=>{
+    const p = getActiveProperty();
+    if(store.properties.length<=1){ showToast('You need at least one property. Add a new one before deleting this.'); return; }
+    if(!confirm('Delete "'+p.name+'" and all of its inspection data? This cannot be undone. Export a backup first if you want to keep it.')) return;
+    store.properties = store.properties.filter(x=>x.id!==p.id);
+    store.activePropertyId = store.properties[0].id;
+    saveStore();
+    currentView = 'welcome';
+    render();
+    showToast('Property deleted');
+  });
+  wirePropertyForm(root);
+}
+function propertyForm(){
+  const p = getActiveProperty();
+  return `
+    <div class="ch-row">
+      <div class="field"><label>Property name</label><input type="text" data-pf="name" value="${escapeAttr(p.name)}"></div>
+      <div class="field"><label>Inspection date</label><input type="text" data-pf="inspectionDate" value="${escapeAttr(p.inspectionDate)}"></div>
+    </div>
+    <div class="ch-row">
+      <div class="field"><label>Address</label><input type="text" data-pf="address" value="${escapeAttr(p.address)}"></div>
+      <div class="field"><label>Buyer name</label><input type="text" data-pf="buyerName" value="${escapeAttr(p.buyerName)}"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea data-pf="notes">${escapeHtml(p.notes)}</textarea></div>
+  `;
+}
+function wirePropertyForm(root){
+  const p = getActiveProperty();
+  root.querySelectorAll('[data-pf]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      p[el.getAttribute('data-pf')] = el.value;
+      saveStore();
+      if(el.getAttribute('data-pf')==='name'){ renderPropertyPicker(); }
+    });
+  });
+}
+
+/* ---------- Export / Import ---------- */
+function doExport(){
+  const blob = new Blob([JSON.stringify(store, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = `pre-home-inspection-backup-${stamp}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Backup exported');
+}
+function doImport(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let data;
+    try{
+      data = JSON.parse(reader.result);
+      if(!data || !Array.isArray(data.properties)) throw new Error('bad format');
+    }catch(e){
+      showToast('That file could not be read as a Pre-Home Inspection backup.');
+      return;
+    }
+    const inc = data.properties.length, cur = store.properties.length;
+    const names = data.properties.slice(0,5).map(p=>(p && p.name) || 'Untitled property').join(', ') + (inc>5 ? ', ...' : '');
+    const word = n => n===1 ? 'property' : 'properties';
+    const ok = confirm('Replace everything in this browser with this backup?\n\n'
+      + 'The backup has ' + inc + ' ' + word(inc) + (inc ? ': ' + names : '') + '.\n'
+      + 'This browser has ' + cur + ' ' + word(cur) + ' now. These will be replaced.\n\n'
+      + 'To keep your current records, press Cancel and export a backup first.');
+    if(!ok){ showToast('Import cancelled - nothing was changed.'); return; }
+    const previous = store;
+    store = data;
+    if(!saveStore({quiet:true})){
+      store = previous;
+      showToast('Import stopped - the backup is too large for this browser. Your current records were kept.');
+      return;
+    }
+    render();
+    showToast('Backup imported');
+  };
+  reader.readAsText(file);
+}
+function shrinkAllPhotos(root){
+  const jobs = [];
+  store.properties.forEach(p=>Object.values(p.checks||{}).forEach(sec=>Object.values(sec||{}).forEach(st=>{
+    (st.evidence||[]).forEach((src,i)=>{ if(typeof src==='string' && src.length > 160000) jobs.push({st, i, src}); });
+  })));
+  if(!jobs.length){ showToast('All photos are already compact.'); return; }
+  const before = storageUsedMB();
+  let done = 0;
+  const next = (k)=>{
+    if(k >= jobs.length){
+      saveStore({quiet:true});
+      const freed = Math.max(0, before - storageUsedMB());
+      showToast(done + ' photo(s) made smaller. About ' + freed.toFixed(1) + ' MB freed.');
+      renderData(root);
+      return;
+    }
+    const j = jobs[k];
+    shrinkImageSrc(j.src, (url)=>{
+      if(url && url.length < j.src.length){ j.st.evidence[j.i] = url; done++; }
+      next(k+1);
+    });
+  };
+  next(0);
+}
+
+/* ---------- Misc ---------- */
+function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function escapeAttr(s){ return escapeHtml(s); }
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+document.getElementById('addPropertyBtn').addEventListener('click', ()=>{
+  const name = prompt('Property name or address:');
+  if(!name) return;
+  const p = newProperty(name);
+  store.properties.push(p);
+  store.activePropertyId = p.id;
+  saveStore();
+  currentView = 'welcome';
+  render();
+});
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  store.theme = store.theme==='dark' ? 'light' : 'dark';
+  saveStore();
+  render();
+});
+document.getElementById('exportBtn').addEventListener('click', doExport);
+document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const f = e.target.files[0];
+  if(f) doImport(f);
+  e.target.value = '';
+});
+
+function closeMobileSidebar(){
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('show');
+}
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('show');
+});
+document.getElementById('sidebarBackdrop').addEventListener('click', closeMobileSidebar);
+
+initDashFloat();
+render();
+</script>
+<script>
+// Keep every open tab in step, so an older tab can never overwrite newer information
+window.addEventListener('storage', function(e){
+  if(e.key !== STORAGE_KEY || !e.newValue) return;
+  try{ store = JSON.parse(e.newValue); render(); }catch(x){}
+});
+window.TST_SAFE={id:'pre-home-inspection',accent:'#b5551f',backup:function(){doExport()},restore:function(){document.getElementById('importFile').click()}};
+</script>
+<!-- ===== The Snag Tag - Data Safety Notice (shared across all products) ===== -->
+<style>
+#tst-safe{position:fixed;inset:0;z-index:2147483000;background:rgba(30,24,16,.55);display:none;align-items:center;justify-content:center;padding:16px;font-family:Inter,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+#tst-safe.on{display:flex}
+#tst-safe .box{background:#fffdf8;color:#2c2a25;max-width:560px;width:100%;max-height:92vh;overflow:auto;border-radius:16px;border:1px solid #e6dccb;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:22px 22px 18px}
+#tst-safe h2{font-family:Georgia,serif;font-size:21px;margin:0 0 12px;color:var(--tst-accent,#8a5a35)}
+#tst-safe .big{font-size:22px;line-height:1.25;font-weight:900;text-transform:uppercase;letter-spacing:.01em;margin:0 0 8px;color:#2c2a25}
+#tst-safe .big span{color:var(--tst-accent,#8a5a35)}
+#tst-safe .btns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 14px}
+#tst-safe button{font:inherit;font-size:14px;font-weight:700;border-radius:10px;padding:10px 14px;cursor:pointer;border:1px solid var(--tst-accent,#8a5a35)}
+#tst-safe .pri{background:var(--tst-accent,#8a5a35);color:#fff}
+#tst-safe .sec{background:#fff;color:var(--tst-accent,#8a5a35)}
+#tst-safe details{border-top:1px solid #eee4d4;padding:9px 0}
+#tst-safe summary{cursor:pointer;font-weight:700;font-size:15px}
+#tst-safe details p,#tst-safe details li{font-size:14px;line-height:1.5;margin:6px 0}
+#tst-safe ul{margin:4px 0 0;padding-left:20px}
+#tst-safe .persist{font-size:12.5px;color:#6b6558;margin:10px 0 0}
+#tst-safe label{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:600;margin:14px 0 12px;cursor:pointer}
+#tst-safe label input{width:20px;height:20px;margin-top:1px;flex-shrink:0;accent-color:var(--tst-accent,#8a5a35)}
+#tst-safe .close{width:100%}
+</style>
+<div id="tst-safe" role="dialog" aria-modal="true" aria-labelledby="tst-safe-t">
+ <div class="box">
+  <h2 id="tst-safe-t">Before you start: how your information is saved</h2>
+  <p class="big">Your information is saved <span>on this device only</span>.</p>
+  <p class="big">Save a <span>backup file</span> regularly.</p>
+  <div class="btns">
+   <button type="button" class="pri" data-act="backup">Save a backup now</button>
+   <button type="button" class="sec" data-act="restore">Restore a backup</button>
+  </div>
+  <details><summary>Where is my information saved?</summary>
+   <p>Inside this browser, on this device. Nothing is sent to The Snag Tag or anyone else. That keeps it private, but it also means you are the only one who can keep a copy safe.</p></details>
+  <details><summary>Why could my information seem to disappear?</summary>
+   <ul>
+    <li>You open the tool in a different browser, a private/incognito window, or on another device.</li>
+    <li>You open a different copy of the tool (for example a downloaded file instead of your link).</li>
+    <li>Your browsing history or site data gets cleared.</li>
+    <li>Safari (iPhone, iPad and Mac) can delete saved information if you don't open the tool for about 7 days.</li>
+    <li>The tool is open in two tabs at the same time. Always use one tab.</li>
+   </ul></details>
+  <details><summary>How do I keep my information safe?</summary>
+   <ul>
+    <li>Press <b>Save a backup now</b> after every session where you change something.</li>
+    <li>Keep the backup file somewhere safe, like your cloud drive or a USB stick.</li>
+    <li>Always open the tool from the same link, in the same browser.</li>
+   </ul></details>
+  <details><summary>How do I get my information back, or use another device?</summary>
+   <p>Open the tool, press <b>Restore a backup</b> and choose your latest backup file. Everything comes back as it was when you saved it.</p></details>
+  <p class="persist" id="tst-safe-p"></p>
+  <label><input type="checkbox" id="tst-safe-ok"> I know and understand how my information is saved. Don't show this again.</label>
+  <button type="button" class="pri close" data-act="close">Continue</button>
+ </div>
+</div>
+<script>
+(function(){
+ var C = window.TST_SAFE || {};
+ var KEY = 'tst_safe_ack_' + (C.id || location.pathname);
+ var el = document.getElementById('tst-safe');
+ if (C.accent) el.style.setProperty('--tst-accent', C.accent);
+ function ack(){ try { return localStorage.getItem(KEY) === '1'; } catch(e){ return false; } }
+ function open(){ el.classList.add('on'); }
+ window.tstShowSafety = open;
+ el.addEventListener('click', function(e){
+  var a = e.target.getAttribute && e.target.getAttribute('data-act'); if (!a) return;
+  if (a === 'backup' && C.backup) C.backup();
+  if (a === 'restore' && C.restore) { el.classList.remove('on'); C.restore(); }
+  if (a === 'close') {
+   if (document.getElementById('tst-safe-ok').checked) { try { localStorage.setItem(KEY, '1'); } catch(e){} }
+   el.classList.remove('on');
+  }
+ });
+ var p = document.getElementById('tst-safe-p');
+ if (navigator.storage && navigator.storage.persist) {
+  navigator.storage.persist().then(function(ok){
+   p.textContent = ok ? 'Good news: this browser has agreed to keep your saved information permanently.' : 'This browser has not promised to keep your information permanently, so backups are extra important.';
+  }).catch(function(){});
+ }
+ if (!ack()) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', open); else open(); }
+})();
+</script>
+<!-- ===== end Data Safety Notice ===== -->
+
+</body>
+</html>
